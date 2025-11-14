@@ -1,3 +1,9 @@
+/*
+    NYU Apartment - Main WebGL File
+    File: apartment.js
+    Authors: Colin Onevathana & Lingshan Jiang
+*/
+
 var gl, program;
 
 var points = [];

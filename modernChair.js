@@ -1,3 +1,9 @@
+/*
+    NYU Apartment - Modern Chair
+    File: modernChair.js
+    Author: Colin Onevathana
+*/
+
 // S-Chair: Base, Diagonal, Seat, Back
 function GenerateChair()
 {

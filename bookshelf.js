@@ -1,3 +1,9 @@
+/*
+    NYU Apartment - Bookshelf
+    File: bookshelf.js
+    Author: Colin Onevathana
+*/
+
 // Generate bookshelf geometry (returns start and count for drawing)
 function GenerateBookshelf()
 {
