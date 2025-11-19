@@ -1,6 +1,13 @@
+/*
+    NYU Apartment - Main WebGL File
+    File: apartment.js
+    Authors: Colin Onevathana & Lingshan Jiang
+*/
+
 var gl, program;
 
 var points = [];
+var normals = [];
 
 var modelViewMatrix;
 var projectionMatrixLoc;
@@ -40,6 +47,10 @@ function main()
     bookshelfGeometry = GenerateBookshelf();
     chairGeometry = GenerateChair();
     
+    // Generate primitive geometries for vase
+    GenerateCylinder();
+    GenerateSphere();
+    
     SendData();
 
     projectionMatrixLoc = gl.getUniformLocation(program, "projectionMatrix");
@@ -77,12 +88,17 @@ function main()
 // Shared utility function - used by both bookshelf.js and modernChair.js
 function quad(a, b, c, d)
 {
-    points.push(a);
-    points.push(b);
-    points.push(c);
-    points.push(a);
-    points.push(c);
-    points.push(d);
+    var t1 = subtract(b, a);
+    var t2 = subtract(c, a);
+    var normal = normalize(cross(t1, t2));
+    normal = vec3(normal);
+    
+    points.push(a); normals.push(normal);
+    points.push(b); normals.push(normal);
+    points.push(c); normals.push(normal);
+    points.push(a); normals.push(normal);
+    points.push(c); normals.push(normal);
+    points.push(d); normals.push(normal);
 }
 
 function SendData()
@@ -93,6 +109,15 @@ function SendData()
     var vPosition = gl.getAttribLocation(program, "vPosition");
     gl.vertexAttribPointer(vPosition, 4, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(vPosition);
+    
+    var nBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, nBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, flatten(normals), gl.STATIC_DRAW);
+    var vNormal = gl.getAttribLocation(program, "vNormal");
+    gl.vertexAttribPointer(vNormal, 3, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(vNormal);
+    
+    gl.uniform4fv(gl.getUniformLocation(program, "lightPosition"), flatten(vec4(5, 5, 5, 1)));
 }
 
 function render()
@@ -172,7 +197,9 @@ function GenerateRoom()
 function DrawRoom()
 {
     var grey = vec4(0.6, 0.6, 0.6, 1);
+    var greyDiff = vec4(0.4, 0.4, 0.4, 1);
     gl.uniform4fv(gl.getUniformLocation(program, "ambientProduct"), flatten(grey));
+    gl.uniform4fv(gl.getUniformLocation(program, "diffuseProduct"), flatten(greyDiff));
     
     gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(modelViewMatrix));
     gl.drawArrays(gl.TRIANGLES, roomGeometry.start, roomGeometry.count);

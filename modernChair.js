@@ -1,3 +1,14 @@
+/*
+    NYU Apartment - S/Z-Chair
+    File: modernChair.js
+    Author: Colin Onevathana
+    
+    Base section: 6 faces
+    Diagonal section: 6 faces
+    Seat section: 6 faces
+    Back section: 6 faces
+*/
+
 // S-Chair: Base, Diagonal, Seat, Back
 function GenerateChair()
 {
@@ -112,7 +123,9 @@ function GenerateChair()
 function DrawChair(x, y, z)
 {
     var chairColor = vec4(0.9, 0.3, 0.3, 1);
+    var chairDiff = vec4(0.6, 0.2, 0.2, 1);
     gl.uniform4fv(gl.getUniformLocation(program, "ambientProduct"), flatten(chairColor));
+    gl.uniform4fv(gl.getUniformLocation(program, "diffuseProduct"), flatten(chairDiff));
     
     modelViewStack.push(modelViewMatrix);
     var t = translate(x, y, z);
