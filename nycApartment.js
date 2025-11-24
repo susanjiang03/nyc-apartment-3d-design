@@ -52,7 +52,8 @@ const floorBrown = new THREE.MeshBasicMaterial({ color: 0x58260b });
 const wallLightShadow = new THREE.MeshBasicMaterial({ color: 0xf2eded });
 const wallDarkShadow = new THREE.MeshBasicMaterial({ color: 0x8d7e50});
 const endTableBrown = new THREE.MeshBasicMaterial({ color: 0x786f63});
-const matWhite = new THREE.MeshBasicMaterial({ color: 0xd5b085});
+const matWhite = new THREE.MeshBasicMaterial({ color: 0xe8dacd});
+const windowTransparent = new THREE.MeshBasicMaterial({ color: 0xd5b085, transparent: true, opacity: 0.6 });
 
 const wallHeight = 8;
 // 3) Build a simple ground for context
@@ -79,10 +80,17 @@ const wallHeight = 8;
 // 5) Build a back wall for context
 {
   const backWallGeo = new THREE.BoxGeometry(20, wallHeight, 0.1);
-  const backWall = new THREE.Mesh(backWallGeo, wallDarkShadow);
+  const backWall = new THREE.Mesh(backWallGeo, windowTransparent);
   backWall.position.set(0, wallHeight/2, -5);
   scene.add(backWall);
 }
+
+// {
+//   const largeWindowGeo = new THREE.BoxGeometry(6, wallHeight*0.95, 0.1);
+//   const largeWindow = new THREE.Mesh(largeWindowGeo, windowTransparent);
+//   largeWindow.position.set(0, wallHeight/2, -5);
+//   scene.add(largeWindow);
+// }
 
 
 // Build mat for context
@@ -142,6 +150,48 @@ for (let i = 0; i < 4; i++) {
 const endTable2 = endTable.clone();
 endTable2.position.set(17.5, 0, 0);
 scene.add(endTable2);
+
+
+// -- Elliptical Coffee Table
+const coffeeTable = new THREE.Mesh(
+  new THREE.CylinderGeometry(1, 1, 2, 32),
+);
+// Scale X and Z to make it elliptical
+const a = 2; // ellipse radius X
+const b = 1.5; // ellipse radius Z
+coffeeTable.scale.set(a, 0.2, b);  // scale Y=1 keeps the height
+//TODO: change color
+coffeeTable.material = new THREE.MeshPhysicalMaterial({
+  color: 0xaad8ff,    // light blue tint (glass)
+  transparent: true,
+  opacity: 0.25,      // mostly see-through
+  transmission: 1.0,  // real glass-style transparency
+  roughness: 0.05,    // lower = sharper reflections
+  metalness: 0.0,
+  ior: 1.5,           // index of refraction (glass ~1.5)
+  thickness: 0.05,    // how thick the glass looks
+  side: THREE.DoubleSide
+});;
+coffeeTable.position.setY(0.75);
+// -- Legs (4 cylinders)
+const coffeeTableLegHeight = 2;
+const coffeeTableLegRadius = 0.9; 
+const coffeeTableLegY = 2; 
+for (let i = 0; i < 4; i++) {
+  const angle = Math.PI / 4 + i * (Math.PI / 2);
+  const leg = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.1, 0.1, coffeeTableLegHeight, 20),
+    //TODO: change color
+    matLightGrey
+  );
+  //TODO: rotate legs if needed
+  leg.position.set(coffeeTableLegRadius * Math.cos(angle), -coffeeTableLegY, coffeeTableLegRadius * Math.sin(angle));
+  coffeeTable.add(leg);
+}
+scene.add(coffeeTable);
+
+
+
 
 
 // TODO: clean up lampRoot codes
