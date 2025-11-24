@@ -48,17 +48,17 @@ const matLightGrey = new THREE.MeshBasicMaterial({ color: 0xa0a8b0 });
 const matAccent    = new THREE.MeshBasicMaterial({ color: 0xf0c040 }); // "light" color
 const matBlack     = new THREE.MeshBasicMaterial({ color: 0xaaeeaa });
 const matBlue      = new THREE.MeshBasicMaterial({ color: 0x3b82f6 });
-const matLightBrown = new THREE.MeshBasicMaterial({ color: 0xda8c38 });
+const floorBrown = new THREE.MeshBasicMaterial({ color: 0x58260b });
 const wallLightShadow = new THREE.MeshBasicMaterial({ color: 0xf2eded });
 const wallDarkShadow = new THREE.MeshBasicMaterial({ color: 0x8d7e50});
 const endTableBrown = new THREE.MeshBasicMaterial({ color: 0x786f63});
-
+const matWhite = new THREE.MeshBasicMaterial({ color: 0xd5b085});
 
 const wallHeight = 8;
 // 3) Build a simple ground for context
 {
   const groundGeo = new THREE.BoxGeometry(20, 0.1, 10);
-  const ground = new THREE.Mesh(groundGeo, matLightBrown);
+  const ground = new THREE.Mesh(groundGeo, floorBrown);
   ground.position.set(0, 0.05, 0);   // sit slightly above y=0 grid lines
   scene.add(ground);
 }
@@ -84,6 +84,14 @@ const wallHeight = 8;
   scene.add(backWall);
 }
 
+
+// Build mat for context
+{
+  const floorMatGeo = new THREE.BoxGeometry(14, 0.1, 9);
+  const floorMat = new THREE.Mesh(floorMatGeo, matWhite);
+  floorMat.position.set(0.2, 0.1, 0);   // sit slightly above y=0 grid lines
+  scene.add(floorMat);  
+}
 
 
 // ---------------------------------------------------------
