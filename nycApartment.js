@@ -51,6 +51,7 @@ const matBlue      = new THREE.MeshBasicMaterial({ color: 0x3b82f6 });
 const matLightBrown = new THREE.MeshBasicMaterial({ color: 0xda8c38 });
 const wallLightShadow = new THREE.MeshBasicMaterial({ color: 0xcab687 });
 const wallDarkShadow = new THREE.MeshBasicMaterial({ color: 0x8d7e50});
+const endTableBrown = new THREE.MeshBasicMaterial({ color: 0x786f63});
 
 // 3) Build a simple ground for context
 {
@@ -79,6 +80,52 @@ const wallDarkShadow = new THREE.MeshBasicMaterial({ color: 0x8d7e50});
 
 
 // ---------------------------------------------------------
+// Build a Round End Table
+//    endTable
+//      ├─ top (cylinder)
+//      ├─ bottom (cylinder)
+//      └─ 4 leg (cylinder) 
+// ---------------------------------------------------------
+
+const endTable = new THREE.Group();
+scene.add(endTable);
+const tableHeight = 0.15;
+const tableRadius = 0.8;
+const centerX = -4;
+const centerZ = -4;
+// -- Top 
+const top = new THREE.Mesh(
+  new THREE.CylinderGeometry(tableRadius, tableRadius, tableHeight, 32),
+  endTableBrown
+);
+top.position.set(centerX, 1.5, centerZ);
+endTable.add(top);
+// -- Bottom
+const bottom = new THREE.Mesh(
+  new THREE.CylinderGeometry(tableRadius, tableRadius, tableHeight, 32),
+  endTableBrown
+);
+bottom.position.set(centerX, 0.5, centerZ);
+endTable.add(bottom);
+
+// -- Legs (4 cylinders)
+const legHeight = 1.65;
+const legRadius = 0.8; 
+const legY = 0.85; 
+for (let i = 0; i < 4; i++) {
+  const angle = i * (Math.PI / 2);
+  const leg = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.12, 0.12, legHeight, 20),
+    matLightGrey
+  );
+  
+  leg.position.set(centerX + legRadius * Math.cos(angle), legY, centerZ + legRadius * Math.sin(angle));
+  endTable.add(leg);
+}
+
+
+// TODO: clean up lampRoot codes
+// ---------------------------------------------------------
 // 4) Build the street lamp with hierarchy
 //    lampRoot
 //      ├─ base (cylinder)
@@ -92,7 +139,6 @@ const wallDarkShadow = new THREE.MeshBasicMaterial({ color: 0x8d7e50});
 //                └─ rim (torus) 
 // ---------------------------------------------------------
 const lampRoot = new THREE.Group();
-// TODO: clean up lampRoot codes
 // scene.add(lampRoot);
 
 // -- Base: wide cylinder near the ground
