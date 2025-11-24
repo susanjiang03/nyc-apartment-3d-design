@@ -38,7 +38,7 @@ axes.renderOrder = 999;
 scene.add(axes);
 
 // adding grid
-const grid = new THREE.GridHelper(20, 20, 0x666666, 0x444444);
+const grid = new THREE.GridHelper(100, 100, 0x666666, 0x444444);
 grid.position.y = 0.001;         // tiny lift above ground
 scene.add(grid);
 
@@ -49,34 +49,41 @@ const matAccent    = new THREE.MeshBasicMaterial({ color: 0xf0c040 }); // "light
 const matBlack     = new THREE.MeshBasicMaterial({ color: 0xaaeeaa });
 const matBlue      = new THREE.MeshBasicMaterial({ color: 0x3b82f6 });
 const matLightBrown = new THREE.MeshBasicMaterial({ color: 0xda8c38 });
-const wallLightShadow = new THREE.MeshBasicMaterial({ color: 0xcab687 });
+const wallLightShadow = new THREE.MeshBasicMaterial({ color: 0xf2eded });
 const wallDarkShadow = new THREE.MeshBasicMaterial({ color: 0x8d7e50});
 const endTableBrown = new THREE.MeshBasicMaterial({ color: 0x786f63});
 
+
+const wallHeight = 8;
 // 3) Build a simple ground for context
 {
-  const groundGeo = new THREE.BoxGeometry(10, 0.1, 10);
+  const groundGeo = new THREE.BoxGeometry(20, 0.1, 10);
   const ground = new THREE.Mesh(groundGeo, matLightBrown);
   ground.position.set(0, 0.05, 0);   // sit slightly above y=0 grid lines
   scene.add(ground);
 }
 
-// 4) Build a left wall for context
+// 4) Build a left and right wall for context
 {
-  const leftWallGeo = new THREE.BoxGeometry(0.1, 6, 10);
+  const leftWallGeo = new THREE.BoxGeometry(0.1, wallHeight, 10);
   const leftWall = new THREE.Mesh(leftWallGeo, wallLightShadow);
-  leftWall.position.set(-5, 3, 0); 
+  leftWall.position.set(-10, wallHeight/2, 0); 
   scene.add(leftWall);
+
+  const rightkWall = leftWall.clone();
+  rightkWall.position.set(10, wallHeight/2, 0);
+  scene.add(rightkWall);
 }
 
 
 // 5) Build a back wall for context
 {
-  const backWallGeo = new THREE.BoxGeometry(10, 6, 0.1);
+  const backWallGeo = new THREE.BoxGeometry(20, wallHeight, 0.1);
   const backWall = new THREE.Mesh(backWallGeo, wallDarkShadow);
-  backWall.position.set(0, 3, -5);
+  backWall.position.set(0, wallHeight/2, -5);
   scene.add(backWall);
 }
+
 
 
 // ---------------------------------------------------------
@@ -91,7 +98,7 @@ const endTable = new THREE.Group();
 scene.add(endTable);
 const tableHeight = 0.15;
 const tableRadius = 0.8;
-const centerX = -4;
+const centerX = -8.8;
 const centerZ = -4;
 // -- Top 
 const top = new THREE.Mesh(
@@ -122,6 +129,11 @@ for (let i = 0; i < 4; i++) {
   leg.position.set(centerX + legRadius * Math.cos(angle), legY, centerZ + legRadius * Math.sin(angle));
   endTable.add(leg);
 }
+
+//duplicate the table to the right side
+const endTable2 = endTable.clone();
+endTable2.position.set(17.5, 0, 0);
+scene.add(endTable2);
 
 
 // TODO: clean up lampRoot codes
