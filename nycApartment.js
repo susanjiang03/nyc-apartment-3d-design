@@ -1,8 +1,16 @@
+//*******************************************************************************
+//* Program: nycApartment.js
+//* Authors: Onevathana, Colin
+//*          Jiang, Lingshan
+//*******************************************************************************
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { createBookshelf } from './bookshelf.js';
 import { createSChair } from './modernChair.js';
 import { createCeilingFan } from './ceilingFan.js';
+import { createEndTable } from './endTable.js';
+import { createCoffeeTable } from './coffeeTable.js';
+import { createSofa } from './sofa.js';
 
 // ---------------------------------------------------------
 // 1) Basic scene setup
@@ -62,7 +70,6 @@ const matBlack     = new THREE.MeshStandardMaterial({ color: 0xaaeeaa });
 const matBlue      = new THREE.MeshStandardMaterial({ color: 0x3b82f6 });
 const matLightBrown = new THREE.MeshStandardMaterial({ color: 0xda8c38 });
 const matGrey = new THREE.MeshStandardMaterial({ color: 0x808080 }); // grey for walls/ceiling/floor
-const endTableBrown = new THREE.MeshStandardMaterial({ color: 0x786f63});
 const matWhite = new THREE.MeshBasicMaterial({ color: 0xe8dacd});
 
 // 3) Build floor extending down like a building
@@ -165,98 +172,21 @@ const fanRotationSpeed = 0.07; // radians per frame
   scene.add(fanLight);
 }
 
-
 // ---------------------------------------------------------
 // 11) Build a Round End Table
-//    endTable
-//      ├─ top (cylinder)
-//      ├─ bottom (cylinder)
-//      └─ 4 leg (cylinder) 
 // ---------------------------------------------------------
-
-const endTable = new THREE.Group();
-scene.add(endTable);
-const tableHeight = 0.15;
-const tableRadius = 0.8;
-const centerX = -4;
-const centerZ = -4;
-// -- Top 
-const top = new THREE.Mesh(
-  new THREE.CylinderGeometry(tableRadius, tableRadius, tableHeight, 32),
-  endTableBrown
-);
-top.position.set(centerX, 1.5, centerZ);
-top.castShadow = true;
-top.receiveShadow = true;
-endTable.add(top);
-// -- Bottom
-const bottom = new THREE.Mesh(
-  new THREE.CylinderGeometry(tableRadius, tableRadius, tableHeight, 32),
-  endTableBrown
-);
-bottom.position.set(centerX, 0.5, centerZ);
-bottom.castShadow = true;
-bottom.receiveShadow = true;
-endTable.add(bottom);
-
-// -- Legs (4 cylinders)
-const legHeight = 1.65;
-const legRadius = 0.8; 
-const legY = 0.85; 
-for (let i = 0; i < 4; i++) {
-  const angle = i * (Math.PI / 2);
-  const leg = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.12, 0.12, legHeight, 20),
-    matLightGrey
-  );
-  
-  leg.position.set(centerX + legRadius * Math.cos(angle), legY, centerZ + legRadius * Math.sin(angle));
-  leg.castShadow = true;
-  leg.receiveShadow = true;
-  endTable.add(leg);
+{
+  const endTable = createEndTable();
+  scene.add(endTable);
 }
 
 // ---------------------------------------------------------
 // 12) Build a Coffee Table
-//    coffeeTable
-//      └─ 4 leg (cylinder) 
 // ---------------------------------------------------------
-const coffeeTable = new THREE.Mesh(
-  new THREE.CylinderGeometry(1, 1, 2, 32),
-);
-// Scale X and Z to make it elliptical
-const a = 2; // ellipse radius X
-const b = 1.5; // ellipse radius Z
-coffeeTable.scale.set(a, 0.2, b);  // scale Y=1 keeps the height
-//TODO: change color
-coffeeTable.material = new THREE.MeshPhysicalMaterial({
-  color: 0xaad8ff,    // light blue tint (glass)
-  transparent: true,
-  opacity: 0.5,      // mostly see-through
-  transmission: 1.0,  // real glass-style transparency
-  roughness: 0.05,    // lower = sharper reflections
-  metalness: 0.0,
-  ior: 1.5,           // index of refraction (glass ~1.5)
-  thickness: 0.05,    // how thick the glass looks
-  side: THREE.DoubleSide
-});;
-coffeeTable.position.setY(0.75);
-// -- Legs (4 cylinders)
-const coffeeTableLegHeight = 2;
-const coffeeTableLegRadius = 0.9; 
-const coffeeTableLegY = 2; 
-for (let i = 0; i < 4; i++) {
-  const angle = Math.PI / 4 + i * (Math.PI / 2);
-  const leg = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.1, 0.1, coffeeTableLegHeight, 20),
-    //TODO: change color
-    matLightGrey
-  );
-  //TODO: rotate legs
-  leg.position.set(coffeeTableLegRadius * Math.cos(angle), -coffeeTableLegY, coffeeTableLegRadius * Math.sin(angle));
-  coffeeTable.add(leg);
+{
+  const coffeeTable = createCoffeeTable();
+  scene.add(coffeeTable);
 }
-scene.add(coffeeTable);
 
 // ---------------------------------------------------------
 // 13) Build floorMat for context
@@ -268,166 +198,17 @@ scene.add(coffeeTable);
   scene.add(floorMat);  
 }
 
-// TODO: clean up lampRoot codes
 // ---------------------------------------------------------
-// 4) Build the street lamp with hierarchy
-//    lampRoot
-//      ├─ base (cylinder)
-//      ├─ pole (cylinder)
-//      └─ armPivot (empty group at hinge height) 
-//          ├─ arm (box)
-//          └─ headPivot (empty group at end of arm)
-//             └─ headGroup
-//                ├─ shade (cone)
-//                ├─ bulb (sphere)
-//                └─ rim (torus) 
+// 14) Create sofa - Extruded Shape Object
 // ---------------------------------------------------------
-const lampRoot = new THREE.Group();
-// scene.add(lampRoot);
-
-// -- Base: wide cylinder near the ground
-const baseHeight = 0.3;
-const base = new THREE.Mesh(
-  new THREE.CylinderGeometry(0.6, 0.8, baseHeight, 32),
-  matDarkGrey
-);
-base.position.set(0, baseHeight / 2, 0);
-lampRoot.add(base);
-
-// -- Pole: tall, slender cylinder rising from the base
-const poleHeight = 3.0;
-const pole = new THREE.Mesh(
-  new THREE.CylinderGeometry(0.12, 0.12, poleHeight, 20),
-  matLightGrey
-);
-pole.position.set(0, baseHeight + poleHeight / 2, 0);
-lampRoot.add(pole);
-
-// -- Arm pivot: an EMPTY group located near the top of the pole.
-//    Rotating this group swings the arm up/down around the hinge point.
-const armPivotHeight = baseHeight + poleHeight * 0.9; // hinge 90% up the pole
-const armPivot = new THREE.Group();
-armPivot.position.set(0, armPivotHeight, 0);  // the whole armPivot group is raised along y axis
-lampRoot.add(armPivot);
-
-// Visualize the hinge with a small sphere "bolt" 
-const hingeBolt = new THREE.Mesh(
-  new THREE.SphereGeometry(0.08, 16, 16),
-  matBlue
-);
-hingeBolt.position.set(0, 0, 0);
-armPivot.add(hingeBolt);
-
-// -- Arm: a thin rectangular box that extends forward from the hinge.
-//    We build it around its own center, then move it so the near end sits at the pivot.
-const armLength = 1.6;
-const armThickness = 0.08;
-const arm = new THREE.Mesh(
-  new THREE.BoxGeometry(armLength, armThickness, armThickness),
-  matLightGrey
-);
-// By default, the box is centered; shift it so its left end touches the pivot.
-arm.position.set(armLength / 2, 0, 0);
-armPivot.add(arm);
-
-// -- Head pivot: another EMPTY group at the far end of the arm.
-//    Rotating this pivot tilts the lamp head around its "neck."
-
-const headPivot = new THREE.Group();
-headPivot.position.set(armLength, 0, 0);
-armPivot.add(headPivot);
-
-const headGroup = new THREE.Group();
-headPivot.add(headGroup);
-
-const shadeHeight = 0.45;
-const shadeRadius = 0.28;
-const bulbRadius  = 0.14;
-
-// a short neck between arm and shade apex
-const neckLen = 0.06;
-const neck = new THREE.Mesh(
-  new THREE.CylinderGeometry(0.035, 0.035, neckLen, 16),
-  matLightGrey
-);
-neck.position.set(0, -neckLen / 2, 0); // hangs down a bit from the pivot
-headGroup.add(neck);
-
-// Shade: apex at pivot -> move cone down by h/2 + half neck
-const shade = new THREE.Mesh(
-  new THREE.ConeGeometry(shadeRadius, shadeHeight, 24, 1, true, 0, Math.PI * 2), // open ended cone 
-  matDarkGrey
-);
-
-shade.position.set(0, -(neckLen + shadeHeight) / 2, 0);  // hang down half neck length, another half shade height
-headGroup.add(shade);
-
-// Bulb: inside the shade, just above the rim
-const bulb = new THREE.Mesh(
-  new THREE.SphereGeometry(bulbRadius, 24, 16),
-  matAccent
-);
-// lift a bit more so it doesn't poke out
-bulb.position.set(0, -(neckLen + shadeHeight) / 2 - 0.1, 0); // bulb should be down a little more than shade
-headGroup.add(bulb);
-
-// Rim: lies on the cone's open edge (y = -h/2 relative to shade center)
-// Torus is in XY by default -> rotate to XZ
-const rim = new THREE.Mesh(
-  new THREE.TorusGeometry(shadeRadius * 0.98, 0.015, 12, 48),
-  matLightGrey
-);
-rim.rotation.x = Math.PI / 2;                 // <-- key fix
-rim.position.set(0, -(neckLen + shadeHeight) / 2 - 0.2, 0); // move rim further down from bulb, adjust to fit properly
-headGroup.add(rim);
+const sofa = createSofa();
+sofa.rotation.y = Math.PI/2;  // 180° turn
+sofa.scale.set(0.5, 0.5, 1);  
+sofa.position.set(-1, 0, 4); 
+scene.add(sofa);
 
 // ---------------------------------------------------------
-// 5) Demonstrate transforms
-//    We'll expose a few live angles you can change via keyboard.
-//    Everything is in *local* space thanks to group hierarchy.
-// ---------------------------------------------------------
-const state = {
-  armAngle: THREE.MathUtils.degToRad(-20),   // rotate arm up/down around the hinge (X axis)
-  headTilt: THREE.MathUtils.degToRad(15),    // tilt head around its pivot (Z axis or X axis; we'll use Z for a classic tilt)
-  rootYaw: THREE.MathUtils.degToRad(0)       // rotate entire lamp around Y axis
-};
-
-// Apply the current state to the scene graph
-function applyTransforms() {
-  lampRoot.rotation.y = state.rootYaw;
-
-  // X axis tilt for raising/lowering arm (pivot is at armPivot.position)
-  armPivot.rotation.z = 0;     // keep z stabilized for clarity
-  armPivot.rotation.x = state.armAngle;
-
-  // Head tilt at end of arm. We'll tilt around Z to show a "cocked" head look.
-  headPivot.rotation.x = 0;
-  headPivot.rotation.z = state.headTilt;
-}
-applyTransforms();
-
-// ---------------------------------------------------------
-// 6) Keyboard controls (simple & visible for students)
-//    A/Z: arm up/down
-//    S/X: head tilt +/-
-//    D/C: rotate whole lamp ±
-// ---------------------------------------------------------
-window.addEventListener("keydown", (e) => {
-  const step = THREE.MathUtils.degToRad(3);
-  switch (e.key.toLowerCase()) {
-    case "a": state.armAngle += step; break;
-    case "z": state.armAngle -= step; break;
-    case "s": state.headTilt += step; break;
-    case "x": state.headTilt -= step; break;
-    case "d": state.rootYaw += step; break;
-    case "c": state.rootYaw -= step; break;
-    default: return;
-  }
-  applyTransforms();
-});
-
-// ---------------------------------------------------------
-// 7) Render loop & resize handling
+// 99) Render loop & resize handling
 // ---------------------------------------------------------
 function onResize() {
   camera.aspect = window.innerWidth / window.innerHeight;
@@ -453,30 +234,3 @@ renderer.setAnimationLoop(() => {
   
   renderer.render(scene, camera);
 });
-
-
-/*
-Key ideas to notice:
-
-1) Parent-child transforms
-   - Rotating armPivot rotates the arm AND everything attached to it (headPivot → headGroup).
-   - Rotating headPivot affects only the headGroup, because it's deeper in the graph.
-
-2) Local vs world space
-   - Positions like arm.position.set(armLength/2, 0, 0) are in the armPivot’s local space.
-   - The arm is modeled centered, then moved so the hinge is at its left end.
-
-3) Pivots without math headaches
-   - You don't need to manually translate to/from origins to rotate around a point.
-   - Create an empty THREE.Group at the hinge point → add the rotating part as a child.
-
-4) Primitives
-   - CylinderGeometry: base, pole
-   - BoxGeometry: arm
-   - ConeGeometry: shade
-   - SphereGeometry: bulb, hinge "bolt"
-   - TorusGeometry: decorative rim 
-
-5) Materials
-   - MeshBasicMaterial is flat (no lights). Focus on shape + transforms.
-*/
