@@ -11,7 +11,12 @@ import { createCeilingFan } from './ceilingFan.js';
 import { createEndTable } from './endTable.js';
 import { createCoffeeTable } from './coffeeTable.js';
 import { createSofa } from './sofa.js';
+<<<<<<< HEAD
 import { createCoffeeCup } from './coffeeCup.js';
+=======
+import { createSnowGlobe } from "./snowGlobe.js";
+
+>>>>>>> master
 // ---------------------------------------------------------
 // 1) Basic scene setup
 // ---------------------------------------------------------
@@ -218,6 +223,16 @@ const fanRotationSpeed = 0.07; // radians per frame
   coffeeCup.position.set(0, 0.95, 0);
   scene.add(coffeeCup);
 }
+
+
+// ---------------------------------------------------------
+// 15) Create snow globe - Surface of Revolution Object
+// ---------------------------------------------------------
+const snowGlobe = createSnowGlobe();
+snowGlobe.scale.set(0.6, 0.6, 0.6);  
+snowGlobe.position.set(3, 1.101, -4.2); 
+snowGlobe.rotation.y = Math.PI/2;
+scene.add(snowGlobe);
 
 // ---------------------------------------------------------
 // 99) Render loop & resize handling
