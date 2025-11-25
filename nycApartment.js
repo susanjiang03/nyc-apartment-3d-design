@@ -11,12 +11,8 @@ import { createCeilingFan } from './ceilingFan.js';
 import { createEndTable } from './endTable.js';
 import { createCoffeeTable } from './coffeeTable.js';
 import { createSofa } from './sofa.js';
-<<<<<<< HEAD
-import { createCoffeeCup } from './coffeeCup.js';
-=======
 import { createSnowGlobe } from "./snowGlobe.js";
-
->>>>>>> master
+import { createCoffeeCup } from "./coffeeCup.js";
 // ---------------------------------------------------------
 // 1) Basic scene setup
 // ---------------------------------------------------------
