@@ -12,7 +12,7 @@ import { createEndTable } from './endTable.js';
 import { createCoffeeTable } from './coffeeTable.js';
 import { createSofa } from './sofa.js';
 import { createSnowGlobe } from "./snowGlobe.js";
-
+import { createCoffeeCup } from "./coffeeCup.js";
 // ---------------------------------------------------------
 // 1) Basic scene setup
 // ---------------------------------------------------------
@@ -202,11 +202,23 @@ const fanRotationSpeed = 0.07; // radians per frame
 // ---------------------------------------------------------
 // 14) Create sofa - Extruded Shape Object
 // ---------------------------------------------------------
-const sofa = createSofa();
-sofa.rotation.y = Math.PI/2;
-sofa.scale.set(0.5, 0.5, 1);  
-sofa.position.set(-1, 0, 4); 
-scene.add(sofa);
+{
+  const sofa = createSofa();
+  sofa.rotation.y = Math.PI/2;  // 180° turn
+  sofa.scale.set(0.5, 0.5, 1);  
+  sofa.position.set(-1, 0, 4); 
+  scene.add(sofa);
+}
+
+// ---------------------------------------------------------
+// 15) Build Coffee Cup - Polygonal Mesh Object
+// ---------------------------------------------------------
+{
+  const coffeeCup = createCoffeeCup();
+  coffeeCup.scale.set(0.3, 0.3, 0.3);  
+  coffeeCup.position.set(0, 0.95, 0);
+  scene.add(coffeeCup);
+}
 
 
 // ---------------------------------------------------------
