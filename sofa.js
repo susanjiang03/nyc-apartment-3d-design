@@ -6,27 +6,31 @@ export function createSofa() {
     const seatDepthX    = 2.0;  // how far the seat sticks out (left→right in profile)
     const backThickness = 0.5;  // thickness of the vertical back
 
-  //      6)(0, backHeight)
-  //        +------------+ 5)(backThickness, backHeight)
-  //        |            |
-  //        |            |
-  //        |            |
-  //        |            | 4)(backThickness, seatHeight)
-  //        +---------------------------+ 3) (seatDepthX, seatHeight)
-  //        |                           |
-  //        |                           |
-  //        |                           |
-  //        +---------------------------+ 
-  //       1) (0,0)                      2) (seatDepthX,0)
-
+      //      8)(delta, backHeight)
+      //        /------------\ 7)(backThickness - delta, backHeight)
+    // 9)(backThickness,      |6)(backThickness, backHeight - delta)
+    //  backHeight - delta).  |
+      //        |            | 
+      //        |            |
+      //        |            | 5)(backThickness, seatHeight)
+      //        +--------------------------\ 4) (seatDepthX - delta, seatHeight)
+      //        |                           | 3) (seatDepthX, seatHeight - delta)
+      //        |                           |
+      //        |                           |
+      //        +---------------------------+ 
+      //       1) (0,0)                      2) (seatDepthX,0)
+    var delta = 0.1;
     const shape = new THREE.Shape();
-    shape.moveTo(0, 0);                        // 1) front bottom
-    shape.lineTo(seatDepthX, 0);               // 2) along bottom to back
-    shape.lineTo(seatDepthX, seatHeight);      // 3) up to top of seat
-    shape.lineTo(backThickness, seatHeight);   // 4) back along seat to where back starts
-    shape.lineTo(backThickness, backHeight);   // 5) up the backrest
-    shape.lineTo(0, backHeight);               // 6) over to top of back
-    shape.closePath();                         // 7) back down to (0,0)
+    shape.moveTo(0, 0);                                 // 1) front bottom
+    shape.lineTo(seatDepthX, 0);                        // 2) along bottom to back
+    shape.lineTo(seatDepthX, seatHeight - delta);       // 3) up to top of seat
+    shape.lineTo(seatDepthX - delta, seatHeight);       // 4) seat front edge
+    shape.lineTo(backThickness, seatHeight);            // 5) back along seat to where back starts
+    shape.lineTo(backThickness, backHeight - delta);    // 6) up the backrest
+    shape.lineTo(backThickness - delta, backHeight);    // 7) top of backrest front edge
+    shape.lineTo(delta, backHeight);                   // 8) top of back back edge
+    shape.lineTo(0, backHeight - delta);               // 9)  back back edge
+    shape.closePath();                                 // 10) back down to (0,0)
 
     const sofaGeo = new THREE.ExtrudeGeometry(shape, {depth: 2.5, bevelEnabled: false});
 
