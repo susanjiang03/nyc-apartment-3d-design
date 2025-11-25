@@ -127,7 +127,7 @@ const matWhite = new THREE.MeshBasicMaterial({ color: 0xe8dacd});
 // 8) S-Chair
 {
   const chair = createSChair();
-  chair.position.set(3, 0.1, -3);
+  chair.position.set(3, 0.108, -3);
   chair.rotation.y = -Math.PI;
   chair.traverse((child) => {
     if (child.isMesh) {
@@ -190,13 +190,15 @@ const fanRotationSpeed = 0.07; // radians per frame
 }
 
 // ---------------------------------------------------------
-// 13) Build floorMat for context
+// 13) Build floorCarpet for context
 // ---------------------------------------------------------
 {
-  const floorMatGeo = new THREE.BoxGeometry(7, 0.05, 7);
-  const floorMat = new THREE.Mesh(floorMatGeo, matWhite);
-  floorMat.position.set(0.2, 0.1, 0);   // sit slightly above y=0 grid lines
-  scene.add(floorMat);  
+  const floorCarpet = new THREE.Mesh(
+    new THREE.BoxGeometry(7, 0.03, 7),
+    matWhite
+  );
+  floorCarpet.position.set(0.2, 0.1, 0);   // sit slightly above y=0 grid lines
+  scene.add(floorCarpet);  
 }
 
 // ---------------------------------------------------------
@@ -206,7 +208,7 @@ const fanRotationSpeed = 0.07; // radians per frame
   const sofa = createSofa();
   sofa.rotation.y = Math.PI/2;  // 180° turn
   sofa.scale.set(0.5, 0.5, 1);  
-  sofa.position.set(-1, 0, 4); 
+  sofa.position.set(-1, 0.108, 4); 
   scene.add(sofa);
 }
 
