@@ -215,7 +215,7 @@ const fanRotationSpeed = 0.07; // radians per frame
 {
   const coffeeCup = createCoffeeCup();
   coffeeCup.scale.set(0.3, 0.3, 0.3);  
-  coffeeCup.position.set(0, 1.1, 0);
+  coffeeCup.position.set(0, 1.21, 0);
   scene.add(coffeeCup);
 }
 
