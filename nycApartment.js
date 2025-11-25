@@ -1,7 +1,7 @@
 //*******************************************************************************
 //* Program: nycApartment.js
-//* Authors: Taylor Harvin
-//*          Lingshan Jiang
+//* Authors: Onevathana, Colin
+//*          Jiang, Lingshan
 //*******************************************************************************
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
