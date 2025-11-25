@@ -121,5 +121,26 @@ export function createSnowGlobe() {
     baseMesh.receiveShadow = true;
     globe.add(baseMesh);
 
+
+    // --------------------
+    // Trees inside the globe
+    // --------------------
+    const treeGroup = new THREE.Group();
+    const trunkMat = new THREE.MeshStandardMaterial({ color: 0x8b5a2b });
+    const leafMat = new THREE.MeshStandardMaterial({ color: 0x228b22 });
+    const trunkHeight = 1, leafHeight = 1.25, leafRadius = 0.5;
+    for (let i = 0; i < 3; i++) {
+        const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, trunkHeight, 12), trunkMat);
+        const leaf = new THREE.Mesh(new THREE.ConeGeometry(leafRadius, leafHeight, 12), leafMat);
+        trunk.position.y = trunkHeight / 2;
+        leaf.position.y = trunkHeight + leafHeight / 2;
+        const tree = new THREE.Group();
+        tree.add(trunk, leaf);
+        tree.position.set(glassMesh.position.x, baseHeight + 0.1, -0.2 + i * 0.2);
+        tree.scale.set(0.2, 0.2, 0.2);
+        treeGroup.add(tree);
+    }
+    globe.add(treeGroup);
+
     return globe;
 };
