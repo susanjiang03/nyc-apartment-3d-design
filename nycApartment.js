@@ -49,11 +49,6 @@ axes.renderOrder = 999;
 
 scene.add(axes);
 
-// adding grid
-const grid = new THREE.GridHelper(20, 20, 0x666666, 0x444444);
-grid.position.y = 0.001;         // tiny lift above ground
-scene.add(grid);
-
 // Add lights for MeshStandardMaterial objects
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
 scene.add(ambientLight);
