@@ -50,17 +50,16 @@ axes.renderOrder = 999;
 scene.add(axes);
 
 // Add lights for MeshStandardMaterial objects
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-scene.add(ambientLight);
+const defaultAmbient = new THREE.AmbientLight(0xffffff, 0.2); // Default dim lighting
+scene.add(defaultAmbient);
 
-const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+const directionalLight = new THREE.DirectionalLight(0xffffff, 0);
 directionalLight.position.set(5, 5, 5);
 directionalLight.castShadow = false; // Disabled to prevent fan shadows in corners
 scene.add(directionalLight);
 
 // 2) Materials (using MeshStandardMaterial for shadows)
 const matGrey = new THREE.MeshStandardMaterial({ color: 0x808080 }); // grey for walls/ceiling/floor
-const matWhite = new THREE.MeshBasicMaterial({ color: 0xe8dacd});
 
 // 3) Build floor extending down like a building
 {
@@ -148,13 +147,23 @@ const matWhite = new THREE.MeshBasicMaterial({ color: 0xe8dacd});
 // 10) Ceiling Fan with integrated light
 let ceilingFan;
 let fanSpinning = false;
+let fanLight;
+let fanLightBulb;
 const fanRotationSpeed = 0.07; // radians per frame
 {
   ceilingFan = createCeilingFan();
   ceilingFan.position.set(0, 6, 0);
   scene.add(ceilingFan);
   
-  const fanLight = new THREE.PointLight(0xffffee, 60, 25);
+  ceilingFan.traverse((child) => {
+    if (child.isMesh && child.geometry.type === 'SphereGeometry') {
+      fanLightBulb = child;
+      fanLightBulb.material.transparent = true;
+      fanLightBulb.material.opacity = 0.15; // Dimly visible when off
+    }
+  });
+  
+  fanLight = new THREE.PointLight(0xffffee, 0, 25);
   fanLight.position.set(0, 4.2, 0);
   fanLight.castShadow = true;
   fanLight.shadow.mapSize.width = 1024;
@@ -181,10 +190,16 @@ const fanRotationSpeed = 0.07; // radians per frame
 // ---------------------------------------------------------
 // 13) Build floorCarpet for context
 // ---------------------------------------------------------
+let floorCarpet;
 {
-  const floorCarpet = new THREE.Mesh(
+  const carpetMaterial = new THREE.MeshStandardMaterial({ 
+    color: 0xe8dacd,
+    transparent: true,
+    opacity: 0.2 // Dimly visible when off
+  });
+  floorCarpet = new THREE.Mesh(
     new THREE.BoxGeometry(7, 0.03, 7),
-    matWhite
+    carpetMaterial
   );
   floorCarpet.position.set(0.2, 0.1, 0);   // sit slightly above y=0 grid lines
   scene.add(floorCarpet);  
@@ -234,9 +249,16 @@ function onResize() {
 window.addEventListener("resize", onResize);
 
 // Keyboard controls for ceiling fan
+let fanLightOn = false;
 window.addEventListener("keydown", (e) => {
   if (e.key.toLowerCase() === 'a') {
     fanSpinning = !fanSpinning; // Toggle fan spinning on/off
+  }
+  if (e.key.toLowerCase() === 's') {
+    fanLightOn = !fanLightOn; // Toggle ceiling fan light on/off
+    fanLight.intensity = fanLightOn ? 60 : 0;
+    if (fanLightBulb) fanLightBulb.material.opacity = fanLightOn ? 0.8 : 0.15;
+    if (floorCarpet) floorCarpet.material.opacity = fanLightOn ? 1.0 : 0.2;
   }
 });
 
