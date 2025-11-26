@@ -1,8 +1,18 @@
 ﻿import * as THREE from 'three';
 
+/**
+ * Wooden bookshelf with shelves and decorative vase
+ * - Brown wood material with realistic texture
+ * - Multiple shelves with vertical dividers
+ * - Teal/turquoise decorative vase on bottom shelf
+ */
 export function createBookshelf() {
     const group = new THREE.Group();
+    
+    // Material
     const brownMaterial = new THREE.MeshStandardMaterial({ color: 0x997233, roughness: 0.7, metalness: 0.1 });
+    
+    // Dimensions
     const width = 2, height = 3, depth = 1, thickness = 0.05;
     
     function createComponent(w, h, d) {
@@ -13,6 +23,7 @@ export function createBookshelf() {
         return mesh;
     }
     
+    // 1) Left and right side panels
     const leftPanel = createComponent(thickness, height, depth);
     leftPanel.position.set(-width/2 + thickness/2, height/2, 0);
     group.add(leftPanel);
@@ -21,6 +32,7 @@ export function createBookshelf() {
     rightPanel.position.set(width/2 - thickness/2, height/2, 0);
     group.add(rightPanel);
     
+    // 2) Top and bottom panels
     const topPanel = createComponent(width, thickness, depth);
     topPanel.position.set(0, height - thickness/2, 0);
     group.add(topPanel);
@@ -29,10 +41,12 @@ export function createBookshelf() {
     bottomPanel.position.set(0, thickness/2, 0);
     group.add(bottomPanel);
     
+    // 3) Back panel
     const backPanel = createComponent(width - thickness*2, height - thickness*2, thickness*0.5);
     backPanel.position.set(0, height/2, -depth/2 + thickness/4);
     group.add(backPanel);
     
+    // 4) Three horizontal shelves
     const shelf1Y = height * 0.25;
     const shelf1 = createComponent(width - thickness*2, thickness, depth);
     shelf1.position.set(0, shelf1Y, 0);
@@ -48,6 +62,7 @@ export function createBookshelf() {
     shelf3.position.set(0, shelf3Y, 0);
     group.add(shelf3);
     
+    // 5) Vertical dividers
     const divider1 = createComponent(thickness*0.8, shelf2Y - shelf1Y, depth);
     divider1.position.set(-(width - thickness*2)/4, (shelf1Y + shelf2Y) / 2, 0);
     group.add(divider1);
@@ -56,6 +71,7 @@ export function createBookshelf() {
     divider2.position.set((width - thickness*2)/4, (shelf2Y + shelf3Y) / 2, 0);
     group.add(divider2);
     
+    // 6) Decorative vase
     const vaseGroup = createVase();
     vaseGroup.position.set(-(width - thickness*2)/4 - 0.3, shelf1Y + thickness, depth/6);
     group.add(vaseGroup);
@@ -63,6 +79,11 @@ export function createBookshelf() {
     return group;
 }
 
+/**
+ * Helper function to create decorative vase
+ * - Teal/turquoise ceramic material
+ * - Multiple cylindrical and spherical sections
+ */
 function createVase() {
     const group = new THREE.Group();
     const vaseMaterial = new THREE.MeshStandardMaterial({ color: 0x338088, roughness: 0.3, metalness: 0.4 });

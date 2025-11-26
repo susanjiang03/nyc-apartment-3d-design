@@ -5,7 +5,6 @@ import * as THREE from "three";
  * - Silver/chrome center housing
  * - 5 brown wooden blades
  * - Light fixture underneath
- * - Pull chains
  */
 export function createCeilingFan() {
   const fanGroup = new THREE.Group();

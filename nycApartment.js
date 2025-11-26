@@ -59,12 +59,6 @@ directionalLight.castShadow = false; // Disabled to prevent fan shadows in corne
 scene.add(directionalLight);
 
 // 2) Materials (using MeshStandardMaterial for shadows)
-const matDarkGrey  = new THREE.MeshStandardMaterial({ color: 0x444b52 });
-const matLightGrey = new THREE.MeshStandardMaterial({ color: 0xa0a8b0 });
-const matAccent    = new THREE.MeshBasicMaterial({ color: 0xf0c040 }); // "light" color - keep basic for light bulb
-const matBlack     = new THREE.MeshStandardMaterial({ color: 0xaaeeaa });
-const matBlue      = new THREE.MeshStandardMaterial({ color: 0x3b82f6 });
-const matLightBrown = new THREE.MeshStandardMaterial({ color: 0xda8c38 });
 const matGrey = new THREE.MeshStandardMaterial({ color: 0x808080 }); // grey for walls/ceiling/floor
 const matWhite = new THREE.MeshBasicMaterial({ color: 0xe8dacd});
 
