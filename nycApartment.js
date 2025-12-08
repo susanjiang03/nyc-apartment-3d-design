@@ -13,6 +13,7 @@ import { createCoffeeTable } from './coffeeTable.js';
 import { createSofa } from './sofa.js';
 import { createSnowGlobe } from "./snowGlobe.js";
 import { createCoffeeCup } from "./coffeeCup.js";
+import { createLamp } from "./lamp.js";
 // ---------------------------------------------------------
 // 1) Basic scene setup
 // ---------------------------------------------------------
@@ -228,13 +229,22 @@ let floorCarpet;
 
 
 // ---------------------------------------------------------
-// 15) Create snow globe - Surface of Revolution Object
+// 16) Create snow globe - Surface of Revolution Object
 // ---------------------------------------------------------
 const snowGlobe = createSnowGlobe();
 snowGlobe.scale.set(0.6, 0.6, 0.6);  
 snowGlobe.position.set(3, 1.101, -4.2); 
 snowGlobe.rotation.y = Math.PI/2;
 scene.add(snowGlobe);
+
+
+// ---------------------------------------------------------
+// 16) Build Lamp - Custom Geometry Object
+// ---------------------------------------------------------
+const lamp = createLamp();
+lamp.position.set(-3.7, 1.64, -3.7);
+scene.add(lamp);
+
 
 // ---------------------------------------------------------
 // 99) Render loop & resize handling
@@ -248,7 +258,7 @@ function onResize() {
 }
 window.addEventListener("resize", onResize);
 
-// Keyboard controls for ceiling fan
+// Keyboard controls for ceiling fan, lamp
 let fanLightOn = false;
 window.addEventListener("keydown", (e) => {
   if (e.key.toLowerCase() === 'a') {
@@ -260,7 +270,28 @@ window.addEventListener("keydown", (e) => {
     if (fanLightBulb) fanLightBulb.material.opacity = fanLightOn ? 0.8 : 0.15;
     if (floorCarpet) floorCarpet.material.opacity = fanLightOn ? 1.0 : 0.2;
   }
+
+  if (e.key.toLowerCase() === "l") toggleLamp();
 });
+
+// Lamp on/off toggle
+let lampOn = false;
+function toggleLamp() {
+  lampOn = !lampOn;
+
+  const { light, bulb, shade } = lamp.userData;
+
+  if (lampOn) {
+    light.intensity = 30;
+    bulb.material.emissiveIntensity = 1.2;
+    shade.material.emissiveIntensity = 0.4;
+  } else {
+    light.intensity = 0;
+    bulb.material.emissiveIntensity = 0;
+    shade.material.emissiveIntensity = 0;
+  }
+  console.log("Lamp is now", lampOn ? "ON" : "OFF");
+}
 
 renderer.setAnimationLoop(() => {
   // Animate ceiling fan rotation if spinning
