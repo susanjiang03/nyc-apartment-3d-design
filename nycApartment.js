@@ -63,11 +63,12 @@ scene.add(directionalLight);
 
 // 2) Materials (using MeshStandardMaterial for shadows)
 const matGrey = new THREE.MeshStandardMaterial({ color: 0x808080 }); // grey for walls/ceiling/floor
+const matLightGrey = new THREE.MeshStandardMaterial({ color: 0xfafafa }); // grey for walls/ceiling/floor
 
 // 3) Build floor extending down like a building
 {
   const buildingHeight = 20; // extend downward
-  const groundGeo = new THREE.BoxGeometry(10, buildingHeight, 10);
+  const groundGeo = new THREE.BoxGeometry(20, buildingHeight, 10);
   const ground = new THREE.Mesh(groundGeo, matGrey);
   ground.position.set(0, -buildingHeight/2 + 0.1, 0); // apartment floor at y=0.1
   ground.receiveShadow = true;
@@ -77,16 +78,26 @@ const matGrey = new THREE.MeshStandardMaterial({ color: 0x808080 }); // grey for
 // 4) Build a left wall for context
 {
   const leftWallGeo = new THREE.BoxGeometry(0.1, 6, 10);
-  const leftWall = new THREE.Mesh(leftWallGeo, matGrey);
-  leftWall.position.set(-5, 3, 0);
+  const leftWall = new THREE.Mesh(leftWallGeo, matLightGrey);
+  leftWall.position.set(-9.9, 3, 0);
   leftWall.receiveShadow = true;
   scene.add(leftWall);
 }
 
-// 5) Build a back wall for context
+// 4) Build a right wall for context
 {
-  const backWallGeo = new THREE.BoxGeometry(10, 6, 0.1);
-  const backWall = new THREE.Mesh(backWallGeo, matGrey);
+  const rightWallGeo = new THREE.BoxGeometry(0.1, 6, 10);
+  const rightWall = new THREE.Mesh(rightWallGeo, matLightGrey);
+  rightWall.position.set(9.9, 3, 0);
+  rightWall.receiveShadow = true;
+  scene.add(rightWall);
+}
+
+// 5) Build a back wall for context
+//TODO: add a large window to the back wall
+{
+  const backWallGeo = new THREE.BoxGeometry(20, 6, 0.1);
+  const backWall = new THREE.Mesh(backWallGeo, matLightGrey);
   backWall.position.set(0, 3, -5);
   backWall.receiveShadow = true;
   scene.add(backWall);
@@ -94,8 +105,8 @@ const matGrey = new THREE.MeshStandardMaterial({ color: 0x808080 }); // grey for
 
 // 6) Build a ceiling
 {
-  const ceilingGeo = new THREE.BoxGeometry(10, 0.1, 10);
-  const ceiling = new THREE.Mesh(ceilingGeo, matGrey);
+  const ceilingGeo = new THREE.BoxGeometry(20, 0.1, 10);
+  const ceiling = new THREE.Mesh(ceilingGeo, matLightGrey);
   ceiling.position.set(0, 6, 0);
   ceiling.receiveShadow = true;
   scene.add(ceiling);
@@ -104,7 +115,7 @@ const matGrey = new THREE.MeshStandardMaterial({ color: 0x808080 }); // grey for
 // 7) Bookshelf
 {
   const bookshelf = createBookshelf();
-  bookshelf.position.set(-4.5, 0.1, 2);
+  bookshelf.position.set(-9.2, 0.1, 3.5);
   bookshelf.rotation.y = Math.PI / 2;
   bookshelf.traverse((child) => {
     if (child.isMesh) {
@@ -118,14 +129,15 @@ const matGrey = new THREE.MeshStandardMaterial({ color: 0x808080 }); // grey for
 // 7b) Refrigerator (right of bookshelf)
 let fridge;
 fridge = createRefrigerator();
-fridge.position.set(-4.5, 0.1, 4);
+fridge.position.set(-9.2, 0.1, -3.8);
 fridge.rotation.y = Math.PI / 2;
+fridge.scale.set(1.2, 1.2, 1.2);  
 scene.add(fridge);
 
 // 8) S-Chair
 {
   const chair = createSChair();
-  chair.position.set(3, 0.108, -3);
+  chair.position.set(6.5, 0.108, -3);
   chair.rotation.y = -Math.PI;
   chair.traverse((child) => {
     if (child.isMesh) {
@@ -139,7 +151,7 @@ scene.add(fridge);
 // 9) floating white desk
 {
   const matWhite = new THREE.MeshStandardMaterial({ color: 0xffffff });
-  const deskWidth = 2.5;
+  const deskWidth = 2.7;
   const deskDepth = 1.2;
   const deskThickness = 0.1;
   const deskHeight = 1.2;
@@ -148,7 +160,7 @@ scene.add(fridge);
     new THREE.BoxGeometry(deskWidth, deskThickness, deskDepth),
     matWhite
   );
-  desk.position.set(3, deskHeight, -4.4);
+  desk.position.set(6.5, deskHeight, -4.4);
   desk.castShadow = true;
   desk.receiveShadow = true;
   scene.add(desk);
@@ -162,7 +174,8 @@ let fanLightBulb;
 const fanRotationSpeed = 0.07; // radians per frame
 {
   ceilingFan = createCeilingFan();
-  ceilingFan.position.set(0, 6, 0);
+  ceilingFan.scale.set(1.2, 1.2, 1.2);
+  ceilingFan.position.set(3, 6, 0);
   scene.add(ceilingFan);
   
   ceilingFan.traverse((child) => {
@@ -174,7 +187,7 @@ const fanRotationSpeed = 0.07; // radians per frame
   });
   
   fanLight = new THREE.PointLight(0xffffee, 0, 25);
-  fanLight.position.set(0, 4.2, 0);
+  fanLight.position.set(3, 4.2, 0);
   fanLight.castShadow = true;
   fanLight.shadow.mapSize.width = 1024;
   fanLight.shadow.mapSize.height = 1024;
@@ -186,7 +199,14 @@ const fanRotationSpeed = 0.07; // radians per frame
 // ---------------------------------------------------------
 {
   const endTable = createEndTable();
+  endTable.scale.set(0.7, 0.7, 0.7);
+  endTable.position.set(3.8, 0.05, 0.8);
   scene.add(endTable);
+
+  const endTable2 = createEndTable();
+  endTable2.scale.set(0.7, 0.7, 0.7);
+  endTable2.position.set(3.8, 0.05, 6);
+  scene.add(endTable2);
 }
 
 // ---------------------------------------------------------
@@ -194,8 +214,9 @@ const fanRotationSpeed = 0.07; // radians per frame
 // ---------------------------------------------------------
 {
   const tv = createTV();
-  tv.position.set(-0.3, 2.5, -4.85);
-  tv.rotation.y = 0;
+  tv.scale.set(1.5, 1.5, 1.5);
+  tv.position.set(9.5, 3.5, 0.25);
+  tv.rotation.y = -Math.PI/2;
   scene.add(tv);
 }
 
@@ -204,6 +225,8 @@ const fanRotationSpeed = 0.07; // radians per frame
 // ---------------------------------------------------------
 {
   const coffeeTable = createCoffeeTable();
+  coffeeTable.position.x = 4.2;
+  coffeeTable.rotation.y = Math.PI / 2;
   scene.add(coffeeTable);
 }
 
@@ -221,7 +244,7 @@ let floorCarpet;
     new THREE.BoxGeometry(7, 0.03, 7),
     carpetMaterial
   );
-  floorCarpet.position.set(0.2, 0.1, 0);   // sit slightly above y=0 grid lines
+  floorCarpet.position.set(3, 0.1, 0);   // sit slightly above y=0 grid lines
   scene.add(floorCarpet);  
 }
 
@@ -230,16 +253,16 @@ let floorCarpet;
 // ---------------------------------------------------------
 {
   const sofa = createSofa();
-  sofa.rotation.y = Math.PI/2;  // 180° turn
-  sofa.scale.set(0.5, 0.5, 1);  
-  sofa.position.set(-1, 0.108, 4); 
+  // sofa.rotation.y = Math.PI/2;  // 180° turn
+  sofa.scale.set(0.8, 0.6, 1.4);  
+  sofa.position.set(0, 0.108, -1.2); 
   scene.add(sofa);
   
   // Add decorative pillows to the sofa
   const pillows = createPillows();
-  pillows.position.set(1.48, 0.483, 4);  // Position sitting on sofa seat (adjusted Y to seat height)
-  pillows.rotation.y = Math.PI/2;  // Match sofa rotation
-  pillows.scale.set(0.5, 0.5, 1);  // Match sofa scale
+  pillows.position.set(0.2, 0.783, 2.1);  // Position sitting on sofa seat (adjusted Y to seat height)
+  // pillows.rotation.y = Math.PI/2;  // Match sofa rotation
+  pillows.scale.set(0.5, 0.5, 1.2);  // Match sofa scale
   scene.add(pillows);
 }
 
@@ -249,34 +272,33 @@ let floorCarpet;
 {
   const coffeeCup = createCoffeeCup();
   coffeeCup.scale.set(0.3, 0.3, 0.3);  
-  coffeeCup.position.set(0, 0.95, 0);
+  coffeeCup.position.set(3.5, 0.95, 0);
   scene.add(coffeeCup);
 }
-
 
 // ---------------------------------------------------------
 // 16) Create snow globe - Surface of Revolution Object
 // ---------------------------------------------------------
 const snowGlobe = createSnowGlobe();
 snowGlobe.scale.set(0.6, 0.6, 0.6);  
-snowGlobe.position.set(3, 1.101, -4.2); 
+snowGlobe.position.set(6.65, 1.101, -4.2); 
 snowGlobe.rotation.y = Math.PI/2;
 scene.add(snowGlobe);
-
 
 // ---------------------------------------------------------
 // 16) Build Lamp - Custom Geometry Object
 // ---------------------------------------------------------
 const lamp = createLamp();
-lamp.position.set(-3.7, 1.64, -3.7);
+lamp.scale.set(0.6, 0.6, 0.6);
+lamp.position.set(1, 1.2, 3.2);
 scene.add(lamp);
-
 
 // ---------------------------------------------------------
 // 17) Build Plant - Custom Geometry Object
 // ---------------------------------------------------------
 const plant = createPlant();
-plant.position.set(0.5, 1.1, 0.5);
+// plant.position.set(4.5, 1.1, 0.5);
+plant.position.set(1, 1.28, -2);
 scene.add(plant);
 
 // ---------------------------------------------------------
@@ -355,6 +377,10 @@ function toggleLamp() {
     bulb.material.emissiveIntensity = 0;
     shade.material.emissiveIntensity = 0;
   }
+
+  lightSwitchAudio.currentTime = 0;
+  lightSwitchAudio.play();
+
   console.log("Lamp is now", lampOn ? "ON" : "OFF");
 }
 

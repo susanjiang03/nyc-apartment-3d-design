@@ -57,6 +57,7 @@ export function createLamp() {
     );
     shade.position.y =
         baseHeight / 2 + poleHeight + shadeHeight / 2 - 0.1;
+    shade.castShadow = true;
     lampGroup.add(shade);
 
     //-- Bulb: inside the shade
