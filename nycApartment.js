@@ -215,7 +215,7 @@ const fanRotationSpeed = 0.07; // radians per frame
 {
   const tv = createTV();
   tv.scale.set(1.5, 1.5, 1.5);
-  tv.position.set(9.5, 3.5, 0.25);
+  tv.position.set(9.6, 3.5, 0.25);
   tv.rotation.y = -Math.PI/2;
   scene.add(tv);
 }
@@ -356,6 +356,13 @@ window.addEventListener("keydown", (e) => {
     if (floorCarpet) floorCarpet.material.opacity = 0.2;
     
     fridgeDoorsOpen = false;
+
+    if(lampOn){
+      toggleLamp();
+    }
+
+    camera.position.set(5, 4, 8);
+    camera.lookAt(0, 1, 0);
   }
 
   if (e.key.toLowerCase() === "l") toggleLamp();
