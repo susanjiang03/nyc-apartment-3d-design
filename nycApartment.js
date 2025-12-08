@@ -13,6 +13,9 @@ import { createCoffeeTable } from './coffeeTable.js';
 import { createSofa } from './sofa.js';
 import { createSnowGlobe } from "./snowGlobe.js";
 import { createCoffeeCup } from "./coffeeCup.js";
+import { createPillows } from './pillows.js';
+import { createRefrigerator } from './refrigerator.js';
+import { createTV } from './tv.js';
 import { createLamp } from "./lamp.js";
 import { createPlant } from "./plant.js";
 // ---------------------------------------------------------
@@ -23,7 +26,6 @@ const scene = new THREE.Scene();
 // A neutral camera looking slightly down at the origin
 const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 200);
 camera.position.set(5, 4, 8);
-// camera.position.set(3, 0, 0);
 camera.lookAt(0, 1, 0);
 
 // WebGL renderer
@@ -52,12 +54,11 @@ axes.renderOrder = 999;
 scene.add(axes);
 
 // Add lights for MeshStandardMaterial objects
-const defaultAmbient = new THREE.AmbientLight(0xffffff, 0.2); // Default dim lighting
-scene.add(defaultAmbient);
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+scene.add(ambientLight);
 
-const directionalLight = new THREE.DirectionalLight(0xffffff, 0);
+const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
 directionalLight.position.set(5, 5, 5);
-directionalLight.castShadow = false; // Disabled to prevent fan shadows in corners
 scene.add(directionalLight);
 
 // 2) Materials (using MeshStandardMaterial for shadows)
@@ -113,6 +114,13 @@ const matGrey = new THREE.MeshStandardMaterial({ color: 0x808080 }); // grey for
   });
   scene.add(bookshelf);
 }
+
+// 7b) Refrigerator (right of bookshelf)
+let fridge;
+fridge = createRefrigerator();
+fridge.position.set(-4.5, 0.1, 4);
+fridge.rotation.y = Math.PI / 2;
+scene.add(fridge);
 
 // 8) S-Chair
 {
@@ -182,6 +190,16 @@ const fanRotationSpeed = 0.07; // radians per frame
 }
 
 // ---------------------------------------------------------
+// 11b) Wall-mounted TV
+// ---------------------------------------------------------
+{
+  const tv = createTV();
+  tv.position.set(-0.3, 2.5, -4.85);
+  tv.rotation.y = 0;
+  scene.add(tv);
+}
+
+// ---------------------------------------------------------
 // 12) Build a Coffee Table
 // ---------------------------------------------------------
 {
@@ -216,6 +234,13 @@ let floorCarpet;
   sofa.scale.set(0.5, 0.5, 1);  
   sofa.position.set(-1, 0.108, 4); 
   scene.add(sofa);
+  
+  // Add decorative pillows to the sofa
+  const pillows = createPillows();
+  pillows.position.set(1.48, 0.483, 4);  // Position sitting on sofa seat (adjusted Y to seat height)
+  pillows.rotation.y = Math.PI/2;  // Match sofa rotation
+  pillows.scale.set(0.5, 0.5, 1);  // Match sofa scale
+  scene.add(pillows);
 }
 
 // ---------------------------------------------------------
@@ -266,17 +291,49 @@ function onResize() {
 }
 window.addEventListener("resize", onResize);
 
-// Keyboard controls for ceiling fan, lamp
+// Fan noise audio
+const fanAudio = new Audio('fan-noise.mp3');
+fanAudio.loop = true;
+
+// Light switch click sound
+const lightSwitchAudio = new Audio('light-switch.mp3');
+
+// Keyboard controls for ceiling fan
 let fanLightOn = false;
+let fridgeDoorsOpen = false;
 window.addEventListener("keydown", (e) => {
   if (e.key.toLowerCase() === 'a') {
     fanSpinning = !fanSpinning; // Toggle fan spinning on/off
+    if (fanSpinning) {
+      fanAudio.play();
+    } else {
+      fanAudio.pause();
+      fanAudio.currentTime = 0;
+    }
   }
   if (e.key.toLowerCase() === 's') {
     fanLightOn = !fanLightOn; // Toggle ceiling fan light on/off
     fanLight.intensity = fanLightOn ? 60 : 0;
     if (fanLightBulb) fanLightBulb.material.opacity = fanLightOn ? 0.8 : 0.15;
-    if (floorCarpet) floorCarpet.material.opacity = fanLightOn ? 1.0 : 0.2;
+    if (floorCarpet) floorCarpet.material.opacity = fanLightOn ? 1 : 0.2;
+    lightSwitchAudio.currentTime = 0;
+    lightSwitchAudio.play();
+  }
+  if (e.key.toLowerCase() === 'd') {
+    fridgeDoorsOpen = !fridgeDoorsOpen; // Toggle fridge doors open/close
+  }
+  if (e.key.toLowerCase() === 'b') {
+    // Reset scene to default state
+    fanSpinning = false;
+    fanAudio.pause();
+    fanAudio.currentTime = 0;
+    
+    fanLightOn = false;
+    fanLight.intensity = 0;
+    if (fanLightBulb) fanLightBulb.material.opacity = 0.15;
+    if (floorCarpet) floorCarpet.material.opacity = 0.2;
+    
+    fridgeDoorsOpen = false;
   }
 
   if (e.key.toLowerCase() === "l") toggleLamp();
@@ -305,6 +362,45 @@ renderer.setAnimationLoop(() => {
   // Animate ceiling fan rotation if spinning
   if (fanSpinning && ceilingFan) {
     ceilingFan.rotation.y += fanRotationSpeed;
+  }
+  
+  // Animate fridge doors and container
+  if (fridge?.userData?.topDoor && fridge?.userData?.bottomDoor) {
+    const targetAngle = fridgeDoorsOpen ? -Math.PI / 2: 0; 
+    const speed = fridgeDoorsOpen ? 0.05 : 0.025;
+    
+    // Smoothly animate top door
+    if (Math.abs(fridge.userData.topDoor.rotation.y - targetAngle) > 0.01) {
+      if (fridge.userData.topDoor.rotation.y < targetAngle) {
+        fridge.userData.topDoor.rotation.y = Math.min(fridge.userData.topDoor.rotation.y + speed, targetAngle);
+      } else {
+        fridge.userData.topDoor.rotation.y = Math.max(fridge.userData.topDoor.rotation.y - speed, targetAngle);
+      }
+    }
+    
+    // Smoothly animate bottom door
+    if (Math.abs(fridge.userData.bottomDoor.rotation.y - targetAngle) > 0.01) {
+      if (fridge.userData.bottomDoor.rotation.y < targetAngle) {
+        fridge.userData.bottomDoor.rotation.y = Math.min(fridge.userData.bottomDoor.rotation.y + speed, targetAngle);
+      } else {
+        fridge.userData.bottomDoor.rotation.y = Math.max(fridge.userData.bottomDoor.rotation.y - speed, targetAngle);
+      }
+    }
+    
+  }
+  
+  // Animate container pulling out of fridge (slower when opening, faster when closing)
+  if (fridge?.userData?.container) {
+    const targetZ = fridgeDoorsOpen ? 0.5 : -0.15;
+    const containerSpeed = fridgeDoorsOpen ? 0.008 : 0.03; // Slow out, fast in
+    
+    if (Math.abs(fridge.userData.container.position.z - targetZ) > 0.01) {
+      if (fridge.userData.container.position.z < targetZ) {
+        fridge.userData.container.position.z = Math.min(fridge.userData.container.position.z + containerSpeed, targetZ);
+      } else {
+        fridge.userData.container.position.z = Math.max(fridge.userData.container.position.z - containerSpeed, targetZ);
+      }
+    }
   }
   
   renderer.render(scene, camera);

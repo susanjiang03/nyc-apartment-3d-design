@@ -2,8 +2,8 @@ import * as THREE from 'three';
 
 export function createSofa() {
     const seatHeight    = 1.5;  // top of seat
-    const backHeight    = 3.0;  // top of backrest
-    const seatDepthX    = 2.0;  // how far the seat sticks out (left→right in profile)
+    const backHeight    = 3;  // top of backrest
+    const seatDepthX    = 2;  // how far the seat sticks out (left→right in profile)
     const backThickness = 0.5;  // thickness of the vertical back
 
       //      8)(delta, backHeight)
@@ -19,7 +19,7 @@ export function createSofa() {
       //        |                           |
       //        +---------------------------+ 
       //       1) (0,0)                      2) (seatDepthX,0)
-    var delta = 0.1;
+    const delta = 0.1;
     const shape = new THREE.Shape();
     shape.moveTo(0, 0);                                 // 1) front bottom
     shape.lineTo(seatDepthX, 0);                        // 2) along bottom to back
@@ -35,7 +35,6 @@ export function createSofa() {
     const sofaGeo = new THREE.ExtrudeGeometry(shape, {depth: 2.5, bevelEnabled: false});
 
     const matSofa = new THREE.MeshStandardMaterial({
-        //TODO: change color
         color: 0x5a3b2e,
         metalness: 0.1,
         roughness: 0.85
