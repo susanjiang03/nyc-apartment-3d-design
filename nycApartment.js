@@ -14,6 +14,7 @@ import { createSofa } from './sofa.js';
 import { createSnowGlobe } from "./snowGlobe.js";
 import { createCoffeeCup } from "./coffeeCup.js";
 import { createLamp } from "./lamp.js";
+import { createPlant } from "./plant.js";
 // ---------------------------------------------------------
 // 1) Basic scene setup
 // ---------------------------------------------------------
@@ -245,6 +246,13 @@ const lamp = createLamp();
 lamp.position.set(-3.7, 1.64, -3.7);
 scene.add(lamp);
 
+
+// ---------------------------------------------------------
+// 17) Build Plant - Custom Geometry Object
+// ---------------------------------------------------------
+const plant = createPlant();
+plant.position.set(0.5, 1.1, 0.5);
+scene.add(plant);
 
 // ---------------------------------------------------------
 // 99) Render loop & resize handling
