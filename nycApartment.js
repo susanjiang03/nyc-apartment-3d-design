@@ -5,24 +5,24 @@
 //*******************************************************************************
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { createBookshelf } from './bookshelf.js';
-import { createSChair } from './modernChair.js';
-import { createCeilingFan } from './ceilingFan.js';
-import { createEndTable } from './endTable.js';
-import { createCoffeeTable } from './coffeeTable.js';
-import { createSofa } from './sofa.js';
-import { createSnowGlobe } from "./snowGlobe.js";
-import { createCoffeeCup } from "./coffeeCup.js";
-import { createPillows } from './pillows.js';
-import { createRefrigerator } from './refrigerator.js';
-import { createTV } from './tv.js';
-import { createLamp } from "./lamp.js";
-import { createPlant } from "./plant.js";
-import { createKitchenIsland } from "./kitchenIsland.js";
-import { createStove } from "./stove.js";
-import { createStool } from "./stool.js";
-import { createCounterWithSink } from "./counterWithSink.js";
-import { createMosaicWall } from "./mosaicWall.js"; 
+import { createBookshelf } from './object/bookshelf.js';
+import { createSChair } from './object/modernChair.js';
+import { createCeilingFan } from './object/ceilingFan.js';
+import { createEndTable } from './object/endTable.js';
+import { createCoffeeTable } from './object/coffeeTable.js';
+import { createSofa } from './object/sofa.js';
+import { createSnowGlobe } from "./object/snowGlobe.js";
+import { createCoffeeCup } from "./object/coffeeCup.js";
+import { createPillows } from './object/pillows.js';
+import { createRefrigerator } from './object/refrigerator.js';
+import { createTV } from './object/tv.js';
+import { createLamp } from "./object/lamp.js";
+import { createPlant } from "./object/plant.js";
+import { createKitchenIsland } from "./object/kitchenIsland.js";
+import { createStove } from "./object/stove.js";
+import { createStool } from "./object/stool.js";
+import { createCounterWithSink } from "./object/counterWithSink.js";
+import { createMosaicWall } from "./object/mosaicWall.js"; 
 
 // ---------------------------------------------------------
 // 1) Basic scene setup
