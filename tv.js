@@ -1,10 +1,17 @@
 import * as THREE from 'three';
 
+const video = document.getElementById("tvVideo");
+const videoTexture = new THREE.VideoTexture(video);
+
+videoTexture.minFilter = THREE.LinearFilter;
+videoTexture.magFilter = THREE.LinearFilter;
+videoTexture.encoding = THREE.sRGBEncoding;
+
 export function createTV() {
     const tvGroup = new THREE.Group();
     
     // TV screen material
-    const screenMat = new THREE.MeshStandardMaterial({
+    const screenMatOff = new THREE.MeshStandardMaterial({
         color: 0x1a1a1a,
         roughness: 0.2,
         metalness: 0.3,
@@ -20,7 +27,7 @@ export function createTV() {
     // TV screen
     const screen = new THREE.Mesh(
         new THREE.BoxGeometry(3, 1.7, 0.05),
-        screenMat
+        screenMatOff // initially off
     );
     screen.position.set(0, 0, 0);
     screen.castShadow = true;
@@ -80,5 +87,8 @@ export function createTV() {
     mountArm.position.set(0, 0, -0.13);
     tvGroup.add(mountArm);
     
+    // export the screen mesh for video texture application
+    tvGroup.userData = { screen, videoTexture, video };
+
     return tvGroup;
 }

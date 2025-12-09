@@ -13,14 +13,17 @@ export function createCounterWithSink() {
   // -------- sizes (in world units) --------
   const counterWidth   = 2.0;   // left–right
   const counterDepth   = 0.6;   // front–back
-  const counterThick   = 0.08;  // thickness of wood top
+  const counterThick   = 0.08;  // thickness of top
+  const counterHeight = 1;
 
   const sinkOuterW     = 0.7;
   const sinkOuterD     = 0.45;
-  const sinkDepth      = 0.22;
+  const sinkDepth      = 0.4;
   const sinkRimThick   = 0.015;
 
   // -------- materials --------
+  const whiteMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.6, metalness: 0.2 });
+
   // marble for counter top
   const marbleMat = new THREE.MeshStandardMaterial({
     map: marbleTex,
@@ -35,7 +38,7 @@ export function createCounterWithSink() {
     reflectivity: 0.9
   });
 
-  // -------- countertop (wood slab) --------
+  // -------- countertop --------
   const counterGeo = new THREE.BoxGeometry(
     counterWidth,
     counterThick,
@@ -44,43 +47,77 @@ export function createCounterWithSink() {
   const counterTop = new THREE.Mesh(counterGeo, marbleMat);
   counterTop.castShadow = true;
   counterTop.receiveShadow = true;
+  counterTop.position.set(0,counterHeight, 0);
   group.add(counterTop);
 
-  // y helper: top surface of the wood
+  // y helper: top surface of the marbeled counter
   const yTop = counterThick / 2;
 
-  // -------- sink rim (thin rectangle sitting on top) --------
-  const rimGeo = new THREE.BoxGeometry(
-    sinkOuterW,
-    sinkRimThick,
-    sinkOuterD
+  // left panel
+  const leftPanelGeo = new THREE.BoxGeometry(
+    0.05,
+    counterHeight,
+    counterDepth
   );
-  const rim = new THREE.Mesh(rimGeo, metalMat);
-  rim.position.set(0, yTop + sinkRimThick / 2 + 0.001, 0); // center
-  group.add(rim);
+  const leftPanel = new THREE.Mesh(leftPanelGeo, whiteMaterial);
+  leftPanel.position.set(
+    -counterWidth / 2 + 0.025,
+    counterHeight/2,
+    0
+  );
+  group.add(leftPanel);
+  
+  // right panel
+  const rightPanelGeo = new THREE.BoxGeometry(
+    0.05,
+    counterHeight,
+    counterDepth
+  );
+  const rightPanel = new THREE.Mesh(rightPanelGeo, whiteMaterial);
+    rightPanel.position.set(
+    counterWidth / 2 - 0.025,
+    counterHeight/2,
+    0
+  );
+  group.add(rightPanel);
 
-  // -------- sink basin (metal box going down) --------
+//   //front panel
+//   const frontPanelGeo = new THREE.BoxGeometry(
+//     counterWidth,
+//     counterHeight,
+//     0.05,
+//   );
+//   const frontPanel = new THREE.Mesh(frontPanelGeo, whiteMaterial);
+//   frontPanel.position.set(
+//     0,
+//     counterHeight/2,
+//     counterDepth
+//   );
+//   group.add(frontPanel);
+
+  // -------- sink basin  --------
   const basinGeo = new THREE.BoxGeometry(
     sinkOuterW - 0.03,
     sinkDepth,
     sinkOuterD - 0.03
   );
   const basin = new THREE.Mesh(basinGeo, metalMat);
-  // start just below the rim and go down into the counter
-  basin.position.set(0, yTop - sinkDepth / 2 + 0.002, 0);
+  basin.position.set(0, yTop - sinkDepth / 2 + 0.002 + counterHeight, 0);
   group.add(basin);
 
-  // -------- drain (small dark circle at bottom) --------
-  const drainGeo = new THREE.CylinderGeometry(0.05, 0.05, 0.01, 24);
-  const drainMat = new THREE.MeshStandardMaterial({
-    color: 0x555555,
-    metalness: 0.8,
-    roughness: 0.4
-  });
-  const drain = new THREE.Mesh(drainGeo, drainMat);
-  drain.rotation.x = Math.PI / 2;
-  drain.position.set(0, yTop - sinkDepth + 0.01, 0);
-  group.add(drain);
+  //faucet
+  const faucetHeight = 0.4;
+  const faucetGeo = new THREE.CylinderGeometry(0.02, 0.02, faucetHeight, 16);
+  const faucet = new THREE.Mesh(faucetGeo, metalMat);
+  faucet.position.set(0,faucetHeight, -0.2);
+  basin.add(faucet);
+
+  // spout
+  const spoutGeo = new THREE.CylinderGeometry(0.015, 0.015, 0.2, 16);
+  const spout = new THREE.Mesh(spoutGeo, metalMat);
+  spout.position.set(0, faucetHeight - 0.2, 0.05);
+  spout.rotation.x = -Math.PI / 2;
+  faucet.add(spout);
 
   // optional: lift whole thing so the bottom of the counter sits at y = 0
   group.position.y = counterThick / 2;

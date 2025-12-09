@@ -5,7 +5,7 @@ const texLoader = new THREE.TextureLoader();
 const mosaicText = texLoader.load('texture/MosaicWallTile.jpg');
 mosaicText.wrapS = THREE.RepeatWrapping;
 mosaicText.wrapT = THREE.RepeatWrapping;
-mosaicText.repeat.set(3, 4);   // tile pattern
+mosaicText.repeat.set(4, 3);   // tile pattern
 
 export function createMosaicWall() {
     const wallGeometry = new THREE.BoxGeometry(0.01, 2, 4);

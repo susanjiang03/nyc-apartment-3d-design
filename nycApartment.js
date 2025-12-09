@@ -204,17 +204,6 @@ const fanRotationSpeed = 0.07; // radians per frame
 // 11) Build a Round End Table
 // ---------------------------------------------------------
 {
-  // const endTable = createEndTable();
-  // endTable.scale.set(0.7, 0.7, 0.7);
-  // endTable.position.set(3.8, 0.05, 0.8);
-  // scene.add(endTable);
-
-  // const endTable2 = createEndTable();
-  // endTable2.scale.set(0.7, 0.7, 0.7);
-  // endTable2.position.set(3.8, 0.05, 6);
-
-  // scene.add(endTable2);
-
   const endTablePositions = [
     [3.8, 0.05, 0.8],
     [3.8, 0.05, 6],
@@ -231,13 +220,12 @@ const fanRotationSpeed = 0.07; // radians per frame
 // ---------------------------------------------------------
 // 11b) Wall-mounted TV
 // ---------------------------------------------------------
-{
-  const tv = createTV();
-  tv.scale.set(1.5, 1.5, 1.5);
-  tv.position.set(9.6, 3.5, 0.25);
-  tv.rotation.y = -Math.PI/2;
-  scene.add(tv);
-}
+
+const tv = createTV();
+tv.scale.set(1.8, 1.8, 1.8);
+tv.position.set(9.6, 3.5, 0.25);
+tv.rotation.y = -Math.PI/2;
+scene.add(tv);
 
 // ---------------------------------------------------------
 // 12) Build a Coffee Table
@@ -326,7 +314,7 @@ scene.add(plant);
 {
   const kitchenIsland = createKitchenIsland();
   kitchenIsland.rotateY(Math.PI / 2);
-  kitchenIsland.position.set(-4.8, 0.1, 0.2);
+  kitchenIsland.position.set(-4.5, 0.1, 0.2);
   kitchenIsland.scale.set(1.2, 1.6, 1.2);
   scene.add(kitchenIsland);
 }
@@ -338,7 +326,8 @@ scene.add(plant);
   const stove = createStove();
   stove.rotateY(Math.PI / 2);
   stove.position.set(-9.2, 0.1, -2.24);
-  stove.scale.set(1.8, 1.8, 1.8);
+  // stove.position.set(-1, 0.1, 4);
+  stove.scale.set(2, 2, 1.8);
   scene.add(stove);
 } 
 
@@ -347,10 +336,10 @@ scene.add(plant);
 // ---------------------------------------------------------
 {
   const stoolPositions = [
-    [-3.4, 0.1, 1.3],
-    [-3.4, 0.1, -0.7],
-    [-6.2, 0.1, 1.3],
-    [-6.2, 0.1, -0.7],
+    [-3.2, 0.1, 1.3],
+    [-3.2, 0.1, -0.7],
+    [-6.0, 0.1, 1.3],
+    [-6.0, 0.1, -0.7],
   ];
   
   stoolPositions.forEach(pos => {
@@ -367,8 +356,9 @@ scene.add(plant);
 {
   const counterWithSink = createCounterWithSink();
   counterWithSink.rotateY(Math.PI / 2);
-  counterWithSink.position.set(-9.2, 1.6, 0.42);
-  counterWithSink.scale.set(1.96, 1.5, 2);
+  counterWithSink.position.set(-9.2, 0.1, 0.48);
+  // counterWithSink.position.set(-2, 0.1, 3.42);
+  counterWithSink.scale.set(1.9, 1.7, 2);
   scene.add(counterWithSink);
 }
 
@@ -409,6 +399,14 @@ fridgeCloseAudio.playbackRate = 0.5; // slightly faster closing sound
 // Keyboard controls for ceiling fan
 let fanLightOn = false;
 let fridgeDoorsOpen = false;
+
+// TV video setup
+const { screen, videoTexture, video } = tv.userData;
+let tvOn = false;
+screen.material.map = null;
+video.pause();
+video.currentTime = 0;
+
 window.addEventListener("keydown", (e) => {
   if (e.key.toLowerCase() === 'a') {
     fanSpinning = !fanSpinning; // Toggle fan spinning on/off
@@ -437,6 +435,9 @@ window.addEventListener("keydown", (e) => {
       fridgeCloseAudio.play();
     }
   }
+
+  if(e.key.toLowerCase() === 't') toggleTV();
+
   if (e.key.toLowerCase() === 'b') {
     // Reset scene to default state
     fanSpinning = false;
@@ -454,9 +455,9 @@ window.addEventListener("keydown", (e) => {
       fridgeCloseAudio.play();
     }
 
-    if(lampOn){
-      toggleLamp();
-    }
+    if(lampOn) toggleLamp();
+
+    if(tvOn) toggleTV();
 
     camera.position.set(5, 4, 8);
     camera.lookAt(0, 1, 0);
@@ -486,6 +487,32 @@ function toggleLamp() {
   lightSwitchAudio.play();
 
   console.log("Lamp is now", lampOn ? "ON" : "OFF");
+}
+
+// TV on/off toggle
+function toggleTV() {
+  tvOn = !tvOn;
+  if (tvOn) {
+     screen.material  = new THREE.MeshStandardMaterial({
+        map: videoTexture,
+        roughness: 0.2,
+        metalness: 0.3,
+        emissive: new THREE.Color(0x1a1a1a),
+        emissiveIntensity: 0.3,
+    });
+    video.play();
+  } else {
+    screen.material = new THREE.MeshStandardMaterial({
+        color: 0x1a1a1a,
+        roughness: 0.2,
+        metalness: 0.3,
+    });
+
+    video.pause();
+    video.currentTime = 0;
+  }
+
+  console.log("TV is now", tvOn ? "ON" : "OFF");
 }
 
 renderer.setAnimationLoop(() => {
