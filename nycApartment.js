@@ -24,6 +24,8 @@ import { createStool } from "./object/stool.js";
 import { createCounterWithSink } from "./object/counterWithSink.js";
 import { createMosaicWall } from "./object/mosaicWall.js"; 
 import { createDiningLight } from "./object/diningLight.js"; 
+import { createCabinetShelves } from "./object/cabinet.js"; 
+
 
 // ---------------------------------------------------------
 // 1) Basic scene setup
@@ -86,8 +88,11 @@ const matLightGrey = new THREE.MeshStandardMaterial({ color: 0xfafafa}); // grey
 // 4) Build a left wall for context
 {
   const leftWallGeo = new THREE.BoxGeometry(0.1, 6, 10);
-  const leftWall = new THREE.Mesh(leftWallGeo, matLightGrey);
-  leftWall.position.set(-9.9, 3, 0);
+  const leftWall = new THREE.Mesh(
+    leftWallGeo,
+    matLightGrey
+  );
+  leftWall.position.set(-9.95, 3, 0);
   leftWall.receiveShadow = true;
   scene.add(leftWall);
 }
@@ -389,7 +394,7 @@ scene.add(plant);
 // ---------------------------------------------------------
 {
   const mosaicWall = createMosaicWall();
-  mosaicWall.position.set(-9.85, 2.1, -0.2);
+  mosaicWall.position.set(-9.88, 2.1, -0.2);
   mosaicWall.scale.set(1, 1, 1.5);
   scene.add(mosaicWall);
 } 
@@ -398,10 +403,22 @@ scene.add(plant);
 // 23) Build Dining Light
 // ---------------------------------------------------------
 const diningLight = createDiningLight();
-diningLight.position.set(-4.5, 5.9, 0.2);
+diningLight.position.set(-4.5, 5.9, 0.0);
 diningLight.rotateY(Math.PI / 2); 
 diningLight.scale.set(1.2, 1.2, 1.2);
 scene.add(diningLight);
+
+
+// ---------------------------------------------------------
+// 23) Build Cabinet shelves
+// ---------------------------------------------------------
+{
+  const cabinetShelves = createCabinetShelves();
+  cabinetShelves.position.set(-9.3, 3.2, 0.2);
+  cabinetShelves.rotateY(Math.PI / 2); 
+  cabinetShelves.scale.set(1.2, 1.2, 0.8);
+  scene.add(cabinetShelves);
+}
 
 // ---------------------------------------------------------
 // 99) Render loop & resize handling
@@ -497,6 +514,8 @@ window.addEventListener("keydown", (e) => {
 
     if(tvOn) toggleTV();
 
+    if(diningLightOn) toggleDiningLight();
+
     camera.position.set(5, 4, 8);
     camera.lookAt(0, 1, 0);
   }
@@ -542,7 +561,7 @@ function toggleDiningLight() {
   // Optional: soften or remove glass glow
   diningLight.traverse(obj => {
     if (obj.material && obj.material.emissiveIntensity !== undefined) {
-      obj.material.emissiveIntensity = diningLightOn ? 3 : 0.0;
+      obj.material.emissiveIntensity = diningLightOn ? 3 : 0.1;
     }
   });
 }

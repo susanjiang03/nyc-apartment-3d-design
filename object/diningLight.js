@@ -6,7 +6,7 @@ export function createDiningLight() {
 
   const barLength = 2.4;
   const rodHeight = 1.8;
-  const globeRadius = 0.12;
+  const globeRadius = 0.16;
 
   // ----- materials -----
   const brassMat = new THREE.MeshStandardMaterial({
@@ -25,7 +25,7 @@ export function createDiningLight() {
     ior: 1.5,
     thickness: 0.08,
     emissive: new THREE.Color(0xffffff),
-    emissiveIntensity: 0.0   // soft self-glow
+    emissiveIntensity: 0.1   // soft self-glow
   });
 
   // ----- ceiling plate -----
