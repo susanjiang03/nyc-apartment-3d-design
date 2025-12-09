@@ -18,6 +18,12 @@ import { createRefrigerator } from './refrigerator.js';
 import { createTV } from './tv.js';
 import { createLamp } from "./lamp.js";
 import { createPlant } from "./plant.js";
+import { createKitchenIsland } from "./kitchenIsland.js";
+import { createStove } from "./stove.js";
+import { createStool } from "./stool.js";
+import { createCounterWithSink } from "./counterWithSink.js";
+import { createMosaicWall } from "./mosaicWall.js"; 
+
 // ---------------------------------------------------------
 // 1) Basic scene setup
 // ---------------------------------------------------------
@@ -63,7 +69,7 @@ scene.add(directionalLight);
 
 // 2) Materials (using MeshStandardMaterial for shadows)
 const matGrey = new THREE.MeshStandardMaterial({ color: 0x808080 }); // grey for walls/ceiling/floor
-const matLightGrey = new THREE.MeshStandardMaterial({ color: 0xfafafa }); // grey for walls/ceiling/floor
+const matLightGrey = new THREE.MeshStandardMaterial({ color: 0xfafafa}); // grey for walls/ceiling/floor
 
 // 3) Build floor extending down like a building
 {
@@ -198,27 +204,28 @@ const fanRotationSpeed = 0.07; // radians per frame
 // 11) Build a Round End Table
 // ---------------------------------------------------------
 {
-  const endTable = createEndTable();
-  endTable.scale.set(0.7, 0.7, 0.7);
-  endTable.position.set(3.8, 0.05, 0.8);
-  scene.add(endTable);
-
-  const endTable2 = createEndTable();
-  endTable2.scale.set(0.7, 0.7, 0.7);
-  endTable2.position.set(3.8, 0.05, 6);
-  scene.add(endTable2);
+  const endTablePositions = [
+    [3.8, 0.05, 0.8],
+    [3.8, 0.05, 6],
+  ];
+  
+  endTablePositions.forEach(pos => {
+    var endTable = createEndTable();
+    endTable.scale.set(0.7, 0.7, 0.7);
+    endTable.position.set(pos[0], pos[1], pos[2]);
+    scene.add(endTable);
+  });
 }
 
 // ---------------------------------------------------------
 // 11b) Wall-mounted TV
 // ---------------------------------------------------------
-{
-  const tv = createTV();
-  tv.scale.set(1.5, 1.5, 1.5);
-  tv.position.set(9.6, 3.5, 0.25);
-  tv.rotation.y = -Math.PI/2;
-  scene.add(tv);
-}
+
+const tv = createTV();
+tv.scale.set(1.8, 1.8, 1.8);
+tv.position.set(9.6, 3.5, 0.25);
+tv.rotation.y = -Math.PI/2;
+scene.add(tv);
 
 // ---------------------------------------------------------
 // 12) Build a Coffee Table
@@ -302,6 +309,69 @@ plant.position.set(1, 1.28, -2);
 scene.add(plant);
 
 // ---------------------------------------------------------
+// 18) Build Kitchen Island - Custom Geometry Object
+// ---------------------------------------------------------
+{
+  const kitchenIsland = createKitchenIsland();
+  kitchenIsland.rotateY(Math.PI / 2);
+  kitchenIsland.position.set(-4.5, 0.1, 0.2);
+  kitchenIsland.scale.set(1.2, 1.6, 1.2);
+  scene.add(kitchenIsland);
+}
+
+// ---------------------------------------------------------
+// 19) Build Stove - Custom Geometry Object   
+// ---------------------------------------------------------
+{
+  const stove = createStove();
+  stove.rotateY(Math.PI / 2);
+  stove.position.set(-9.2, 0.1, -2.24);
+  // stove.position.set(-1, 0.1, 4);
+  stove.scale.set(2, 2, 1.8);
+  scene.add(stove);
+} 
+
+// ---------------------------------------------------------
+// 20) Build Stools around Kitchen Island
+// ---------------------------------------------------------
+{
+  const stoolPositions = [
+    [-3.2, 0.1, 1.3],
+    [-3.2, 0.1, -0.7],
+    [-6.0, 0.1, 1.3],
+    [-6.0, 0.1, -0.7],
+  ];
+  
+  stoolPositions.forEach(pos => {
+    var stool = createStool();
+    stool.position.set(pos[0], pos[1], pos[2]);
+    stool.scale.set(1.2, 1.2, 1.2);
+    scene.add(stool);
+  });
+}
+
+// ---------------------------------------------------------
+// 21) Build Countertop and Sink near Stove
+// ---------------------------------------------------------
+{
+  const counterWithSink = createCounterWithSink();
+  counterWithSink.rotateY(Math.PI / 2);
+  counterWithSink.position.set(-9.2, 0.1, 0.48);
+  // counterWithSink.position.set(-2, 0.1, 3.42);
+  counterWithSink.scale.set(1.9, 1.7, 2);
+  scene.add(counterWithSink);
+}
+
+// ---------------------------------------------------------
+// 22) Build Mosaic Wall behind stove and counter
+// ---------------------------------------------------------
+{
+  const mosaicWall = createMosaicWall();
+  mosaicWall.position.set(-9.85, 2.1, -0.2);
+  mosaicWall.scale.set(1, 1, 1.5);
+  scene.add(mosaicWall);
+} 
+// ---------------------------------------------------------
 // 99) Render loop & resize handling
 // ---------------------------------------------------------
 function onResize() {
@@ -314,15 +384,29 @@ function onResize() {
 window.addEventListener("resize", onResize);
 
 // Fan noise audio
-const fanAudio = new Audio('fan-noise.mp3');
+const fanAudio = new Audio('./sound/fan-noise.mp3');
 fanAudio.loop = true;
 
 // Light switch click sound
-const lightSwitchAudio = new Audio('light-switch.mp3');
+const lightSwitchAudio = new Audio('./sound/light-switch.mp3');
+
+//fridge door open sound
+const fridgeOpenAudio = new Audio('./sound/fridge-open.mp3'); 
+//fridge door close sound
+const fridgeCloseAudio = new Audio('./sound/fridge-close.mp3');
+fridgeCloseAudio.playbackRate = 0.5; // slightly faster closing sound
 
 // Keyboard controls for ceiling fan
 let fanLightOn = false;
 let fridgeDoorsOpen = false;
+
+// TV video setup
+const { screen, videoTexture, video } = tv.userData;
+let tvOn = false;
+screen.material.map = null;
+video.pause();
+video.currentTime = 0;
+
 window.addEventListener("keydown", (e) => {
   if (e.key.toLowerCase() === 'a') {
     fanSpinning = !fanSpinning; // Toggle fan spinning on/off
@@ -343,7 +427,17 @@ window.addEventListener("keydown", (e) => {
   }
   if (e.key.toLowerCase() === 'd') {
     fridgeDoorsOpen = !fridgeDoorsOpen; // Toggle fridge doors open/close
+    if (fridgeDoorsOpen) {
+      fridgeOpenAudio.currentTime = 0;
+      fridgeOpenAudio.play();
+    } else {
+      fridgeCloseAudio.currentTime = 0;
+      fridgeCloseAudio.play();
+    }
   }
+
+  if(e.key.toLowerCase() === 't') toggleTV();
+
   if (e.key.toLowerCase() === 'b') {
     // Reset scene to default state
     fanSpinning = false;
@@ -355,11 +449,15 @@ window.addEventListener("keydown", (e) => {
     if (fanLightBulb) fanLightBulb.material.opacity = 0.15;
     if (floorCarpet) floorCarpet.material.opacity = 0.2;
     
-    fridgeDoorsOpen = false;
-
-    if(lampOn){
-      toggleLamp();
+    if(fridgeDoorsOpen){
+      fridgeDoorsOpen = false;
+      fridgeCloseAudio.currentTime = 0;
+      fridgeCloseAudio.play();
     }
+
+    if(lampOn) toggleLamp();
+
+    if(tvOn) toggleTV();
 
     camera.position.set(5, 4, 8);
     camera.lookAt(0, 1, 0);
@@ -389,6 +487,32 @@ function toggleLamp() {
   lightSwitchAudio.play();
 
   console.log("Lamp is now", lampOn ? "ON" : "OFF");
+}
+
+// TV on/off toggle
+function toggleTV() {
+  tvOn = !tvOn;
+  if (tvOn) {
+     screen.material  = new THREE.MeshStandardMaterial({
+        map: videoTexture,
+        roughness: 0.2,
+        metalness: 0.3,
+        emissive: new THREE.Color(0x1a1a1a),
+        emissiveIntensity: 0.3,
+    });
+    video.play();
+  } else {
+    screen.material = new THREE.MeshStandardMaterial({
+        color: 0x1a1a1a,
+        roughness: 0.2,
+        metalness: 0.3,
+    });
+
+    video.pause();
+    video.currentTime = 0;
+  }
+
+  console.log("TV is now", tvOn ? "ON" : "OFF");
 }
 
 renderer.setAnimationLoop(() => {
