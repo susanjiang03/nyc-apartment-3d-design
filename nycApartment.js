@@ -81,6 +81,7 @@ const matLightGrey = new THREE.MeshStandardMaterial({ color: 0xfafafa}); // grey
   scene.add(ground);
 }
 
+
 // 4) Build a left wall for context
 {
   const leftWallGeo = new THREE.BoxGeometry(0.1, 6, 10);
@@ -102,11 +103,31 @@ const matLightGrey = new THREE.MeshStandardMaterial({ color: 0xfafafa}); // grey
 // 5) Build a back wall for context
 //TODO: add a large window to the back wall
 {
+  const texLoader = new THREE.TextureLoader();
+  
+  const windowTex = texLoader.load('./texture/new_york_at_night.jpg');
+  windowTex.wrapS = THREE.RepeatWrapping;
+  windowTex.wrapT = THREE.RepeatWrapping;
+  windowTex.repeat.set(1, 1);
+
   const backWallGeo = new THREE.BoxGeometry(20, 6, 0.1);
   const backWall = new THREE.Mesh(backWallGeo, matLightGrey);
   backWall.position.set(0, 3, -5);
   backWall.receiveShadow = true;
   scene.add(backWall);
+
+  const window = new THREE.Mesh(
+    new THREE.BoxGeometry(16, 5, 0.1),
+    new THREE.MeshStandardMaterial({
+      map: windowTex,
+      roughness: 0.9,
+      metalness: 0.0,
+    })
+  );
+  window.position.set(0, 0.2, 0.05);
+  window.receiveShadow = true;
+  backWall.add(window);
+
 }
 
 // 6) Build a ceiling

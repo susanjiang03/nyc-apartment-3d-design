@@ -20,7 +20,9 @@ export function createSnowGlobe() {
             metalness: 0.0,
             ior: 1.5,
             thickness: 0.2,
-            side: THREE.DoubleSide
+            side: THREE.DoubleSide, 
+            emissive: 0xffcc88,
+            emissiveIntensity: 1
         })
     );
     glassMesh.position.y = baseHeight + glassRadius;
@@ -74,6 +76,22 @@ export function createSnowGlobe() {
         treeGroup.add(tree);
     }
     globe.add(treeGroup);
+
+
+     //-- Bulb: inside the glass
+    const bulb = new THREE.PointLight(0xffffff, 1.2, 5);  
+    bulb.position.set(0, 0, 0);   // center of the sphere
+    glassMesh.add(bulb);
+
+    bulb.intensity = 0;
+
+    // // -- Light source (for actual illumination)
+    // const light = new THREE.PointLight(0xfff5cc, 0, 6, 2.0);
+    // light.position.copy(glassMesh.position);
+    // light.castShadow = true;
+
+    // expose for toggle
+    // globe.userData = { light};
 
     return globe;
 };
