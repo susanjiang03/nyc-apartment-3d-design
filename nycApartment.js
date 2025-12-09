@@ -18,6 +18,7 @@ import { createRefrigerator } from './refrigerator.js';
 import { createTV } from './tv.js';
 import { createLamp } from "./lamp.js";
 import { createPlant } from "./plant.js";
+import { createKitchenIsland } from "./kitchenIsland.js";
 // ---------------------------------------------------------
 // 1) Basic scene setup
 // ---------------------------------------------------------
@@ -301,6 +302,16 @@ const plant = createPlant();
 plant.position.set(1, 1.28, -2);
 scene.add(plant);
 
+// ---------------------------------------------------------
+// 18) Build Kitchen Island - Custom Geometry Object
+// ---------------------------------------------------------
+{
+  const kitchenIsland = createKitchenIsland();
+  kitchenIsland.rotateY(Math.PI / 2);
+  kitchenIsland.position.set(-4.5, 0.1, 0.2);
+  kitchenIsland.scale.set(1.2, 1.6, 1.2);
+  scene.add(kitchenIsland);
+}
 // ---------------------------------------------------------
 // 99) Render loop & resize handling
 // ---------------------------------------------------------
