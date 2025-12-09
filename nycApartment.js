@@ -21,6 +21,8 @@ import { createPlant } from "./plant.js";
 import { createKitchenIsland } from "./kitchenIsland.js";
 import { createStove } from "./stove.js";
 import { createStool } from "./stool.js";
+import { createCounterWithSink } from "./counterWithSink.js";
+import { createMosaicWall } from "./mosaicWall.js"; 
 
 // ---------------------------------------------------------
 // 1) Basic scene setup
@@ -202,15 +204,28 @@ const fanRotationSpeed = 0.07; // radians per frame
 // 11) Build a Round End Table
 // ---------------------------------------------------------
 {
-  const endTable = createEndTable();
-  endTable.scale.set(0.7, 0.7, 0.7);
-  endTable.position.set(3.8, 0.05, 0.8);
-  scene.add(endTable);
+  // const endTable = createEndTable();
+  // endTable.scale.set(0.7, 0.7, 0.7);
+  // endTable.position.set(3.8, 0.05, 0.8);
+  // scene.add(endTable);
 
-  const endTable2 = createEndTable();
-  endTable2.scale.set(0.7, 0.7, 0.7);
-  endTable2.position.set(3.8, 0.05, 6);
-  scene.add(endTable2);
+  // const endTable2 = createEndTable();
+  // endTable2.scale.set(0.7, 0.7, 0.7);
+  // endTable2.position.set(3.8, 0.05, 6);
+
+  // scene.add(endTable2);
+
+  const endTablePositions = [
+    [3.8, 0.05, 0.8],
+    [3.8, 0.05, 6],
+  ];
+  
+  endTablePositions.forEach(pos => {
+    var endTable = createEndTable();
+    endTable.scale.set(0.7, 0.7, 0.7);
+    endTable.position.set(pos[0], pos[1], pos[2]);
+    scene.add(endTable);
+  });
 }
 
 // ---------------------------------------------------------
@@ -322,7 +337,7 @@ scene.add(plant);
 {
   const stove = createStove();
   stove.rotateY(Math.PI / 2);
-  stove.position.set(-9.2, 0.1, -2.22);
+  stove.position.set(-9.2, 0.1, -2.24);
   stove.scale.set(1.8, 1.8, 1.8);
   scene.add(stove);
 } 
@@ -347,6 +362,26 @@ scene.add(plant);
 }
 
 // ---------------------------------------------------------
+// 21) Build Countertop and Sink near Stove
+// ---------------------------------------------------------
+{
+  const counterWithSink = createCounterWithSink();
+  counterWithSink.rotateY(Math.PI / 2);
+  counterWithSink.position.set(-9.2, 1.6, 0.42);
+  counterWithSink.scale.set(1.96, 1.5, 2);
+  scene.add(counterWithSink);
+}
+
+// ---------------------------------------------------------
+// 22) Build Mosaic Wall behind stove and counter
+// ---------------------------------------------------------
+{
+  const mosaicWall = createMosaicWall();
+  mosaicWall.position.set(-9.85, 2.1, -0.2);
+  mosaicWall.scale.set(1, 1, 1.5);
+  scene.add(mosaicWall);
+} 
+// ---------------------------------------------------------
 // 99) Render loop & resize handling
 // ---------------------------------------------------------
 function onResize() {
@@ -359,16 +394,16 @@ function onResize() {
 window.addEventListener("resize", onResize);
 
 // Fan noise audio
-const fanAudio = new Audio('fan-noise.mp3');
+const fanAudio = new Audio('./sound/fan-noise.mp3');
 fanAudio.loop = true;
 
 // Light switch click sound
-const lightSwitchAudio = new Audio('light-switch.mp3');
+const lightSwitchAudio = new Audio('./sound/light-switch.mp3');
 
 //fridge door open sound
-const fridgeOpenAudio = new Audio('fridge-open.mp3'); 
+const fridgeOpenAudio = new Audio('./sound/fridge-open.mp3'); 
 //fridge door close sound
-const fridgeCloseAudio = new Audio('fridge-close.mp3');
+const fridgeCloseAudio = new Audio('./sound/fridge-close.mp3');
 fridgeCloseAudio.playbackRate = 0.5; // slightly faster closing sound
 
 // Keyboard controls for ceiling fan

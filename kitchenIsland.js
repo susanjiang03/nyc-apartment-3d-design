@@ -1,5 +1,12 @@
 import * as THREE from 'three';
 
+const texLoader = new THREE.TextureLoader();
+
+const marbleTex = texLoader.load('texture/marble.jpg');
+marbleTex.wrapS = THREE.RepeatWrapping;
+marbleTex.wrapT = THREE.RepeatWrapping;
+marbleTex.repeat.set(1, 1);   // tile pattern
+
 /*
   Kitchen Island
  */
@@ -8,7 +15,11 @@ export function createKitchenIsland() {
 
     // Material
     const whiteMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.6, metalness: 0.2 });
-    const countertopMaterial = new THREE.MeshStandardMaterial({ color: 0xf0f0f0, roughness: 0.3, metalness: 0.5 });
+    const countertopMaterial = new THREE.MeshStandardMaterial({ 
+       map: marbleTex,
+       roughness: 0.35,   // a bit glossy
+       metalness: 0.0
+    });
 
     // Dimensionsl
     const islandWidth = 2.5;
