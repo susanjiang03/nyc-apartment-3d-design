@@ -23,6 +23,7 @@ import { createStove } from "./object/stove.js";
 import { createStool } from "./object/stool.js";
 import { createCounterWithSink } from "./object/counterWithSink.js";
 import { createMosaicWall } from "./object/mosaicWall.js"; 
+import { createDiningLight } from "./object/diningLight.js"; 
 
 // ---------------------------------------------------------
 // 1) Basic scene setup
@@ -392,6 +393,16 @@ scene.add(plant);
   mosaicWall.scale.set(1, 1, 1.5);
   scene.add(mosaicWall);
 } 
+
+// ---------------------------------------------------------
+// 23) Build Dining Light
+// ---------------------------------------------------------
+const diningLight = createDiningLight();
+diningLight.position.set(-4.5, 5.9, 0.2);
+diningLight.rotateY(Math.PI / 2); 
+diningLight.scale.set(1.2, 1.2, 1.2);
+scene.add(diningLight);
+
 // ---------------------------------------------------------
 // 99) Render loop & resize handling
 // ---------------------------------------------------------
@@ -428,6 +439,10 @@ screen.material.map = null;
 video.pause();
 video.currentTime = 0;
 
+// set light on boolean initial value false
+let lampOn = false;
+let diningLightOn = false;
+
 window.addEventListener("keydown", (e) => {
   if (e.key.toLowerCase() === 'a') {
     fanSpinning = !fanSpinning; // Toggle fan spinning on/off
@@ -459,6 +474,8 @@ window.addEventListener("keydown", (e) => {
 
   if(e.key.toLowerCase() === 't') toggleTV();
 
+  if(e.key.toLowerCase() === 'k') toggleDiningLight();
+
   if (e.key.toLowerCase() === 'b') {
     // Reset scene to default state
     fanSpinning = false;
@@ -488,7 +505,6 @@ window.addEventListener("keydown", (e) => {
 });
 
 // Lamp on/off toggle
-let lampOn = false;
 function toggleLamp() {
   lampOn = !lampOn;
 
@@ -508,6 +524,27 @@ function toggleLamp() {
   lightSwitchAudio.play();
 
   console.log("Lamp is now", lampOn ? "ON" : "OFF");
+}
+
+// dining light on/off toggle
+function toggleDiningLight() {
+  diningLightOn = !diningLightOn;
+  const { bulbs } = diningLight.userData;
+
+  lightSwitchAudio.currentTime = 0;
+  lightSwitchAudio.play();
+
+  bulbs.forEach(bulb => {
+    bulb.intensity = diningLightOn ? 1.5 : 0;
+  });
+
+  console.log("Dinning light is now", diningLightOn ? "ON" : "OFF");
+  // Optional: soften or remove glass glow
+  diningLight.traverse(obj => {
+    if (obj.material && obj.material.emissiveIntensity !== undefined) {
+      obj.material.emissiveIntensity = diningLightOn ? 3 : 0.0;
+    }
+  });
 }
 
 // TV on/off toggle
