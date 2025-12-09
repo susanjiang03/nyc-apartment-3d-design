@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 
-/**
+/*
+  Kitchen Island
  */
 export function createKitchenIsland() {
     const island = new THREE.Group();

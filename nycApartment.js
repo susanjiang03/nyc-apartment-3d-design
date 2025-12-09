@@ -19,6 +19,9 @@ import { createTV } from './tv.js';
 import { createLamp } from "./lamp.js";
 import { createPlant } from "./plant.js";
 import { createKitchenIsland } from "./kitchenIsland.js";
+import { createStove } from "./stove.js";
+import { createStool } from "./stool.js";
+
 // ---------------------------------------------------------
 // 1) Basic scene setup
 // ---------------------------------------------------------
@@ -64,7 +67,7 @@ scene.add(directionalLight);
 
 // 2) Materials (using MeshStandardMaterial for shadows)
 const matGrey = new THREE.MeshStandardMaterial({ color: 0x808080 }); // grey for walls/ceiling/floor
-const matLightGrey = new THREE.MeshStandardMaterial({ color: 0xfafafa }); // grey for walls/ceiling/floor
+const matLightGrey = new THREE.MeshStandardMaterial({ color: 0xfafafa}); // grey for walls/ceiling/floor
 
 // 3) Build floor extending down like a building
 {
@@ -308,10 +311,41 @@ scene.add(plant);
 {
   const kitchenIsland = createKitchenIsland();
   kitchenIsland.rotateY(Math.PI / 2);
-  kitchenIsland.position.set(-4.5, 0.1, 0.2);
+  kitchenIsland.position.set(-4.8, 0.1, 0.2);
   kitchenIsland.scale.set(1.2, 1.6, 1.2);
   scene.add(kitchenIsland);
 }
+
+// ---------------------------------------------------------
+// 19) Build Stove - Custom Geometry Object   
+// ---------------------------------------------------------
+{
+  const stove = createStove();
+  stove.rotateY(Math.PI / 2);
+  stove.position.set(-9.2, 0.1, -2.22);
+  stove.scale.set(1.8, 1.8, 1.8);
+  scene.add(stove);
+} 
+
+// ---------------------------------------------------------
+// 20) Build Stools around Kitchen Island
+// ---------------------------------------------------------
+{
+  const stoolPositions = [
+    [-3.4, 0.1, 1.3],
+    [-3.4, 0.1, -0.7],
+    [-6.2, 0.1, 1.3],
+    [-6.2, 0.1, -0.7],
+  ];
+  
+  stoolPositions.forEach(pos => {
+    var stool = createStool();
+    stool.position.set(pos[0], pos[1], pos[2]);
+    stool.scale.set(1.2, 1.2, 1.2);
+    scene.add(stool);
+  });
+}
+
 // ---------------------------------------------------------
 // 99) Render loop & resize handling
 // ---------------------------------------------------------
@@ -330,6 +364,12 @@ fanAudio.loop = true;
 
 // Light switch click sound
 const lightSwitchAudio = new Audio('light-switch.mp3');
+
+//fridge door open sound
+const fridgeOpenAudio = new Audio('fridge-open.mp3'); 
+//fridge door close sound
+const fridgeCloseAudio = new Audio('fridge-close.mp3');
+fridgeCloseAudio.playbackRate = 0.5; // slightly faster closing sound
 
 // Keyboard controls for ceiling fan
 let fanLightOn = false;
@@ -354,6 +394,13 @@ window.addEventListener("keydown", (e) => {
   }
   if (e.key.toLowerCase() === 'd') {
     fridgeDoorsOpen = !fridgeDoorsOpen; // Toggle fridge doors open/close
+    if (fridgeDoorsOpen) {
+      fridgeOpenAudio.currentTime = 0;
+      fridgeOpenAudio.play();
+    } else {
+      fridgeCloseAudio.currentTime = 0;
+      fridgeCloseAudio.play();
+    }
   }
   if (e.key.toLowerCase() === 'b') {
     // Reset scene to default state
@@ -366,7 +413,11 @@ window.addEventListener("keydown", (e) => {
     if (fanLightBulb) fanLightBulb.material.opacity = 0.15;
     if (floorCarpet) floorCarpet.material.opacity = 0.2;
     
-    fridgeDoorsOpen = false;
+    if(fridgeDoorsOpen){
+      fridgeDoorsOpen = false;
+      fridgeCloseAudio.currentTime = 0;
+      fridgeCloseAudio.play();
+    }
 
     if(lampOn){
       toggleLamp();
