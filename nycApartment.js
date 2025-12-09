@@ -5,24 +5,27 @@
 //*******************************************************************************
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { createBookshelf } from './bookshelf.js';
-import { createSChair } from './modernChair.js';
-import { createCeilingFan } from './ceilingFan.js';
-import { createEndTable } from './endTable.js';
-import { createCoffeeTable } from './coffeeTable.js';
-import { createSofa } from './sofa.js';
-import { createSnowGlobe } from "./snowGlobe.js";
-import { createCoffeeCup } from "./coffeeCup.js";
-import { createPillows } from './pillows.js';
-import { createRefrigerator } from './refrigerator.js';
-import { createTV } from './tv.js';
-import { createLamp } from "./lamp.js";
-import { createPlant } from "./plant.js";
-import { createKitchenIsland } from "./kitchenIsland.js";
-import { createStove } from "./stove.js";
-import { createStool } from "./stool.js";
-import { createCounterWithSink } from "./counterWithSink.js";
-import { createMosaicWall } from "./mosaicWall.js"; 
+import { createBookshelf } from './object/bookshelf.js';
+import { createSChair } from './object/modernChair.js';
+import { createCeilingFan } from './object/ceilingFan.js';
+import { createEndTable } from './object/endTable.js';
+import { createCoffeeTable } from './object/coffeeTable.js';
+import { createSofa } from './object/sofa.js';
+import { createSnowGlobe } from "./object/snowGlobe.js";
+import { createCoffeeCup } from "./object/coffeeCup.js";
+import { createPillows } from './object/pillows.js';
+import { createRefrigerator } from './object/refrigerator.js';
+import { createTV } from './object/tv.js';
+import { createLamp } from "./object/lamp.js";
+import { createPlant } from "./object/plant.js";
+import { createKitchenIsland } from "./object/kitchenIsland.js";
+import { createStove } from "./object/stove.js";
+import { createStool } from "./object/stool.js";
+import { createCounterWithSink } from "./object/counterWithSink.js";
+import { createMosaicWall } from "./object/mosaicWall.js"; 
+import { createDiningLight } from "./object/diningLight.js"; 
+import { createCabinetShelves } from "./object/cabinet.js"; 
+
 
 // ---------------------------------------------------------
 // 1) Basic scene setup
@@ -81,11 +84,15 @@ const matLightGrey = new THREE.MeshStandardMaterial({ color: 0xfafafa}); // grey
   scene.add(ground);
 }
 
+
 // 4) Build a left wall for context
 {
   const leftWallGeo = new THREE.BoxGeometry(0.1, 6, 10);
-  const leftWall = new THREE.Mesh(leftWallGeo, matLightGrey);
-  leftWall.position.set(-9.9, 3, 0);
+  const leftWall = new THREE.Mesh(
+    leftWallGeo,
+    matLightGrey
+  );
+  leftWall.position.set(-9.95, 3, 0);
   leftWall.receiveShadow = true;
   scene.add(leftWall);
 }
@@ -102,11 +109,31 @@ const matLightGrey = new THREE.MeshStandardMaterial({ color: 0xfafafa}); // grey
 // 5) Build a back wall for context
 //TODO: add a large window to the back wall
 {
+  const texLoader = new THREE.TextureLoader();
+  
+  const windowTex = texLoader.load('./texture/new_york_at_night.jpg');
+  windowTex.wrapS = THREE.RepeatWrapping;
+  windowTex.wrapT = THREE.RepeatWrapping;
+  windowTex.repeat.set(1, 1);
+
   const backWallGeo = new THREE.BoxGeometry(20, 6, 0.1);
   const backWall = new THREE.Mesh(backWallGeo, matLightGrey);
   backWall.position.set(0, 3, -5);
   backWall.receiveShadow = true;
   scene.add(backWall);
+
+  const window = new THREE.Mesh(
+    new THREE.BoxGeometry(16, 5, 0.1),
+    new THREE.MeshStandardMaterial({
+      map: windowTex,
+      roughness: 0.9,
+      metalness: 0.0,
+    })
+  );
+  window.position.set(0, 0.2, 0.05);
+  window.receiveShadow = true;
+  backWall.add(window);
+
 }
 
 // 6) Build a ceiling
@@ -367,10 +394,32 @@ scene.add(plant);
 // ---------------------------------------------------------
 {
   const mosaicWall = createMosaicWall();
-  mosaicWall.position.set(-9.85, 2.1, -0.2);
+  mosaicWall.position.set(-9.88, 2.1, -0.2);
   mosaicWall.scale.set(1, 1, 1.5);
   scene.add(mosaicWall);
 } 
+
+// ---------------------------------------------------------
+// 23) Build Dining Light
+// ---------------------------------------------------------
+const diningLight = createDiningLight();
+diningLight.position.set(-4.5, 5.9, 0.0);
+diningLight.rotateY(Math.PI / 2); 
+diningLight.scale.set(1.2, 1.2, 1.2);
+scene.add(diningLight);
+
+
+// ---------------------------------------------------------
+// 23) Build Cabinet shelves
+// ---------------------------------------------------------
+{
+  const cabinetShelves = createCabinetShelves();
+  cabinetShelves.position.set(-9.3, 3.2, 0.2);
+  cabinetShelves.rotateY(Math.PI / 2); 
+  cabinetShelves.scale.set(1.2, 1.2, 0.8);
+  scene.add(cabinetShelves);
+}
+
 // ---------------------------------------------------------
 // 99) Render loop & resize handling
 // ---------------------------------------------------------
@@ -407,6 +456,10 @@ screen.material.map = null;
 video.pause();
 video.currentTime = 0;
 
+// set light on boolean initial value false
+let lampOn = false;
+let diningLightOn = false;
+
 window.addEventListener("keydown", (e) => {
   if (e.key.toLowerCase() === 'a') {
     fanSpinning = !fanSpinning; // Toggle fan spinning on/off
@@ -438,6 +491,8 @@ window.addEventListener("keydown", (e) => {
 
   if(e.key.toLowerCase() === 't') toggleTV();
 
+  if(e.key.toLowerCase() === 'k') toggleDiningLight();
+
   if (e.key.toLowerCase() === 'b') {
     // Reset scene to default state
     fanSpinning = false;
@@ -459,6 +514,8 @@ window.addEventListener("keydown", (e) => {
 
     if(tvOn) toggleTV();
 
+    if(diningLightOn) toggleDiningLight();
+
     camera.position.set(5, 4, 8);
     camera.lookAt(0, 1, 0);
   }
@@ -467,7 +524,6 @@ window.addEventListener("keydown", (e) => {
 });
 
 // Lamp on/off toggle
-let lampOn = false;
 function toggleLamp() {
   lampOn = !lampOn;
 
@@ -487,6 +543,27 @@ function toggleLamp() {
   lightSwitchAudio.play();
 
   console.log("Lamp is now", lampOn ? "ON" : "OFF");
+}
+
+// dining light on/off toggle
+function toggleDiningLight() {
+  diningLightOn = !diningLightOn;
+  const { bulbs } = diningLight.userData;
+
+  lightSwitchAudio.currentTime = 0;
+  lightSwitchAudio.play();
+
+  bulbs.forEach(bulb => {
+    bulb.intensity = diningLightOn ? 1.5 : 0;
+  });
+
+  console.log("Dinning light is now", diningLightOn ? "ON" : "OFF");
+  // Optional: soften or remove glass glow
+  diningLight.traverse(obj => {
+    if (obj.material && obj.material.emissiveIntensity !== undefined) {
+      obj.material.emissiveIntensity = diningLightOn ? 3 : 0.1;
+    }
+  });
 }
 
 // TV on/off toggle
